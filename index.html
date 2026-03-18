@@ -110,8 +110,9 @@ tr:hover td{background:#fafaf8}
 
 /* ===== HERO ===== */
 .hero{background:url('thrive-hero-bg.jpg') center center/cover no-repeat;color:var(--white);padding:80px 20px;text-align:center;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,0.08)}
-.hero::after{content:''}
+.hero::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,0.08);pointer-events:none}
+.hero::after{content:'';pointer-events:none}
+.hero>*{position:relative;z-index:1}
 .hero h1{font-size:2.8rem;letter-spacing:-1px;margin-bottom:12px;position:relative}
 .hero p{font-size:1.15rem;opacity:.9;max-width:500px;margin:0 auto 28px;position:relative}
 @media(max-width:768px){.hero{padding:60px 20px}.hero h1{font-size:2rem}}
@@ -218,6 +219,7 @@ tr:hover td{background:#fafaf8}
     <button class="admin-nav-link" data-admin="admin-bookings" onclick="switchAdminTab('admin-bookings')">Bookings</button>
     <button class="admin-nav-link" data-admin="admin-packages" onclick="switchAdminTab('admin-packages')">Packages</button>
     <button class="admin-nav-link" data-admin="admin-payments" onclick="switchAdminTab('admin-payments')">Payments</button>
+    <button class="admin-nav-link" data-admin="admin-reports" onclick="switchAdminTab('admin-reports')">📊 Reports</button>
     <button class="admin-nav-link" onclick="exitAdmin()" style="color:rgba(255,255,255,.4);margin-top:20px">← Exit Admin</button>
   </aside>
   <main class="admin-content" id="adminContent">
@@ -1423,6 +1425,7 @@ function switchAdminTab(tab) {
     case 'admin-bookings': renderAdminBookings(content); break;
     case 'admin-packages': renderAdminPackages(content); break;
     case 'admin-payments': renderAdminPayments(content); break;
+    case 'admin-reports': renderAdminReports(content); break;
   }
 }
 
@@ -1942,6 +1945,188 @@ function renderAdminPayments(container) {
         </tbody>
       </table>
     </div>`;
+}
+
+function renderAdminReports(container) {
+  const now = new Date();
+  const thisMonth = now.getMonth();
+  const thisYear = now.getFullYear();
+
+  // --- Financial Report ---
+  const monthPayments = state.payments.filter(p => {
+    const d = new Date(p.date);
+    return d.getMonth() === thisMonth && d.getFullYear() === thisYear;
+  });
+  const monthRevenue = monthPayments.reduce((sum, p) => sum + p.amount, 0);
+  const totalRevenue = state.payments.reduce((sum, p) => sum + p.amount, 0);
+
+  // Revenue by package type
+  const revenueByType = {};
+  state.payments.forEach(p => {
+    const type = p.description || 'Other';
+    revenueByType[type] = (revenueByType[type] || 0) + p.amount;
+  });
+  const topTypes = Object.entries(revenueByType).sort((a,b) => b[1]-a[1]).slice(0,6);
+
+  // --- Class Fullness Report ---
+  const upcoming = state.classes.filter(c => new Date(c.date) > now);
+  const past = state.classes.filter(c => new Date(c.date) <= now);
+
+  function fullnessPct(cls) {
+    return cls.maxCapacity > 0 ? Math.round((cls.bookedCount / cls.maxCapacity) * 100) : 0;
+  }
+  function fullnessBar(pct) {
+    const color = pct >= 80 ? '#4caf50' : pct >= 50 ? '#f0b724' : '#e07b6a';
+    return `<div style="background:#eee;border-radius:6px;height:8px;overflow:hidden;width:100%;margin-top:4px;">
+      <div style="height:100%;background:${color};width:${pct}%;border-radius:6px;transition:width .3s;"></div>
+    </div>`;
+  }
+
+  // Avg fullness by class type
+  const typeStats = {};
+  state.classes.forEach(c => {
+    if (!typeStats[c.type]) typeStats[c.type] = { total: 0, booked: 0, count: 0 };
+    typeStats[c.type].total += c.maxCapacity;
+    typeStats[c.type].booked += c.bookedCount;
+    typeStats[c.type].count++;
+  });
+
+  // --- Client Stats ---
+  const totalClients = state.users.length;
+  const activeClients = state.users.filter(u => u.packages.some(p => p.creditsRemaining > 0 || p.isUnlimited)).length;
+  const flaggedClients = state.users.filter(u => u.parq && u.parq.flagged).length;
+  const newThisMonth = state.users.filter(u => {
+    if (!u.createdAt) return false;
+    const d = new Date(u.createdAt);
+    return d.getMonth() === thisMonth && d.getFullYear() === thisYear;
+  }).length;
+
+  // --- Upcoming capacity alerts ---
+  const fullClasses = upcoming.filter(c => c.bookedCount >= c.maxCapacity).length;
+  const nearlyFull = upcoming.filter(c => {
+    const pct = fullnessPct(c);
+    return pct >= 70 && pct < 100;
+  }).length;
+
+  container.innerHTML = `
+    <h2>📊 Reports</h2>
+    <p class="text-muted mb-3">Business overview — updated in real time from your data.</p>
+
+    <!-- Financial Summary -->
+    <h3 class="mt-3 mb-2">💰 Financial Summary</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;">
+      <div style="background:var(--card);border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">THIS MONTH</div>
+        <div style="font-size:24px;font-weight:700;color:var(--teal);">$${monthRevenue}</div>
+      </div>
+      <div style="background:var(--card);border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">ALL TIME</div>
+        <div style="font-size:24px;font-weight:700;color:var(--text);">$${totalRevenue}</div>
+      </div>
+      <div style="background:var(--card);border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">TRANSACTIONS</div>
+        <div style="font-size:24px;font-weight:700;color:var(--text);">${state.payments.length}</div>
+      </div>
+      <div style="background:var(--card);border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">AVG SALE</div>
+        <div style="font-size:24px;font-weight:700;color:var(--text);">$${state.payments.length ? Math.round(totalRevenue/state.payments.length) : 0}</div>
+      </div>
+    </div>
+
+    <div style="background:var(--card);border-radius:14px;padding:16px;margin-bottom:20px;">
+      <div style="font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:12px;">REVENUE BY PACKAGE TYPE</div>
+      ${topTypes.map(([type, amount]) => {
+        const pct = Math.round((amount / totalRevenue) * 100);
+        return `<div style="margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px;">
+            <span>${type}</span><span style="font-weight:600;">$${amount} <span style="color:var(--text-muted);font-weight:400;">(${pct}%)</span></span>
+          </div>
+          <div style="background:#eee;border-radius:6px;height:6px;overflow:hidden;">
+            <div style="height:100%;background:var(--teal);width:${pct}%;border-radius:6px;"></div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <!-- Class Fullness -->
+    <h3 class="mt-3 mb-2">📅 Class Fullness</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px;">
+      <div style="background:var(--card);border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">UPCOMING CLASSES</div>
+        <div style="font-size:24px;font-weight:700;color:var(--text);">${upcoming.length}</div>
+      </div>
+      <div style="background:#fff0f0;border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:#c0392b;letter-spacing:.5px;margin-bottom:4px;">FULL</div>
+        <div style="font-size:24px;font-weight:700;color:#c0392b;">${fullClasses}</div>
+      </div>
+      <div style="background:#fffbea;border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:#c49a10;letter-spacing:.5px;margin-bottom:4px;">NEARLY FULL</div>
+        <div style="font-size:24px;font-weight:700;color:#c49a10;">${nearlyFull}</div>
+      </div>
+      <div style="background:#f0fff4;border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:var(--teal);letter-spacing:.5px;margin-bottom:4px;">HAS SPOTS</div>
+        <div style="font-size:24px;font-weight:700;color:var(--teal);">${upcoming.length - fullClasses}</div>
+      </div>
+    </div>
+
+    <div style="background:var(--card);border-radius:14px;padding:16px;margin-bottom:20px;">
+      <div style="font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:12px;">AVG FULLNESS BY CLASS TYPE</div>
+      ${Object.entries(typeStats).map(([type, s]) => {
+        const pct = s.total > 0 ? Math.round((s.booked/s.total)*100) : 0;
+        const label = type.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+        return `<div style="margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px;">
+            <span>${label}</span><span style="font-weight:600;">${pct}% full <span style="color:var(--text-muted);font-weight:400;">(${s.count} classes)</span></span>
+          </div>
+          ${fullnessBar(pct)}
+        </div>`;
+      }).join('')}
+    </div>
+
+    <!-- Client Stats -->
+    <h3 class="mt-3 mb-2">👥 Client Stats</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;">
+      <div style="background:var(--card);border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">TOTAL CLIENTS</div>
+        <div style="font-size:24px;font-weight:700;color:var(--text);">${totalClients}</div>
+      </div>
+      <div style="background:var(--card);border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">ACTIVE (HAVE CREDITS)</div>
+        <div style="font-size:24px;font-weight:700;color:var(--teal);">${activeClients}</div>
+      </div>
+      <div style="background:var(--card);border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">NEW THIS MONTH</div>
+        <div style="font-size:24px;font-weight:700;color:var(--green);">${newThisMonth}</div>
+      </div>
+      <div style="background:${flaggedClients > 0 ? '#fff0f0' : 'var(--card)'};border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:${flaggedClients > 0 ? '#c0392b' : 'var(--text-muted)'};letter-spacing:.5px;margin-bottom:4px;">🚩 PAR-Q FLAGGED</div>
+        <div style="font-size:24px;font-weight:700;color:${flaggedClients > 0 ? '#c0392b' : 'var(--text)'};">${flaggedClients}</div>
+      </div>
+    </div>
+
+    <!-- Booking Stats -->
+    <h3 class="mt-3 mb-2">🎯 Booking Stats</h3>
+    <div style="background:var(--card);border-radius:14px;padding:16px;margin-bottom:40px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;">
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">TOTAL BOOKINGS</div>
+          <div style="font-size:22px;font-weight:700;">${state.bookings.length}</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">CONFIRMED</div>
+          <div style="font-size:22px;font-weight:700;color:var(--teal);">${state.bookings.filter(b=>b.status==='confirmed').length}</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">CANCELLED</div>
+          <div style="font-size:22px;font-weight:700;color:#e07b6a;">${state.bookings.filter(b=>b.status==='cancelled').length}</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">CANCEL RATE</div>
+          <div style="font-size:22px;font-weight:700;">${state.bookings.length ? Math.round((state.bookings.filter(b=>b.status==='cancelled').length/state.bookings.length)*100) : 0}%</div>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 // =======================================================================
