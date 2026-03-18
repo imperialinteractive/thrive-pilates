@@ -193,6 +193,7 @@ tr:hover td{background:#fafaf8}
       <button class="nav-link" data-page="schedule" onclick="navigate('schedule')">Schedule</button>
       <button class="nav-link" data-page="pricing" onclick="navigate('pricing')">Pricing</button>
       <button class="nav-link" data-page="account" onclick="navigate('account')">My Account</button>
+      <button class="nav-link" onclick="navigate('home');setTimeout(()=>document.getElementById('contact-section')?.scrollIntoView({behavior:'smooth'}),200)">Contact</button>
     </div>
     <button class="hamburger" onclick="toggleMobileMenu()">&#9776;</button>
   </div>
@@ -201,6 +202,7 @@ tr:hover td{background:#fafaf8}
     <button class="nav-link" data-page="schedule" onclick="navigate('schedule');toggleMobileMenu()">Schedule</button>
     <button class="nav-link" data-page="pricing" onclick="navigate('pricing');toggleMobileMenu()">Pricing</button>
     <button class="nav-link" data-page="account" onclick="navigate('account');toggleMobileMenu()">My Account</button>
+    <button class="nav-link" onclick="navigate('home');setTimeout(()=>document.getElementById('contact-section')?.scrollIntoView({behavior:'smooth'}),200);toggleMobileMenu()">Contact</button>
     <button class="nav-link" onclick="navigate('admin-login');toggleMobileMenu()" style="color:var(--gray-dark);font-size:.8rem;margin-top:20px">Admin</button>
   </div>
 </nav>
@@ -257,6 +259,24 @@ tr:hover td{background:#fafaf8}
         <h3>Intro Offer — $20</h3>
         <p class="text-muted mt-1">New to Thrive? Try your first class for just $20. Available to first-time clients only.</p>
         <button class="btn btn-primary btn-sm mt-2" onclick="navigate('schedule')">Get Started</button>
+      </div>
+    </div>
+  </div>
+  <!-- CONTACT SECTION -->
+  <div style="background:var(--teal);margin-top:40px;padding:48px 24px;" id="contact-section">
+    <div style="max-width:600px;margin:0 auto;text-align:center;">
+      <h2 style="color:white;margin-bottom:8px;">Get in Touch</h2>
+      <p style="color:rgba(255,255,255,0.85);margin-bottom:28px;">Questions about classes, packages, or your first session? We'd love to hear from you.</p>
+      <div style="display:flex;flex-direction:column;gap:16px;align-items:center;">
+        <div style="background:rgba(255,255,255,0.15);border-radius:14px;padding:16px 28px;width:100%;max-width:400px;box-sizing:border-box;">
+          <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:.5px;margin-bottom:4px;font-family:-apple-system,sans-serif;">EMAIL</div>
+          <a href="mailto:Steph@thrivebodytherapy.com" style="color:white;font-size:15px;font-family:-apple-system,sans-serif;text-decoration:none;font-weight:600;">Steph@thrivebodytherapy.com</a>
+        </div>
+        <div style="background:rgba(255,255,255,0.15);border-radius:14px;padding:16px 28px;width:100%;max-width:400px;box-sizing:border-box;">
+          <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:.5px;margin-bottom:4px;font-family:-apple-system,sans-serif;">LOCATION</div>
+          <p style="color:white;font-size:15px;font-family:-apple-system,sans-serif;margin:0;font-weight:600;">13105 Dale Meadows Rd</p>
+          <p style="color:rgba(255,255,255,0.85);font-size:14px;font-family:-apple-system,sans-serif;margin:2px 0 0;">Summerland, BC — Upstairs in the barn</p>
+        </div>
       </div>
     </div>
   </div>
