@@ -198,6 +198,7 @@ tr:hover td{background:#fafaf8}
       <button class="nav-link" data-page="account" onclick="navigate('account')">My Account</button>
       <button class="nav-link" onclick="navigate('home');setTimeout(()=>document.getElementById('contact-section')?.scrollIntoView({behavior:'smooth'}),200)">Contact</button>
     </div>
+    <a href="/" style="font-size:13px;color:var(--teal);font-family:-apple-system,sans-serif;text-decoration:none;font-weight:600;white-space:nowrap;padding:6px 10px;border:1px solid var(--teal);border-radius:20px;margin-left:8px;">← Thrive</a>
     <button class="hamburger" onclick="toggleMobileMenu()">&#9776;</button>
   </div>
   <div class="mobile-menu" id="mobileMenu">
@@ -207,6 +208,7 @@ tr:hover td{background:#fafaf8}
     <button class="nav-link" data-page="account" onclick="navigate('account');toggleMobileMenu()">My Account</button>
     <button class="nav-link" onclick="navigate('home');setTimeout(()=>document.getElementById('contact-section')?.scrollIntoView({behavior:'smooth'}),200);toggleMobileMenu()">Contact</button>
     <button class="nav-link" onclick="navigate('admin-login');toggleMobileMenu()" style="color:var(--gray-dark);font-size:.8rem;margin-top:20px">Admin</button>
+    <a href="/" style="display:block;padding:12px 0;font-size:14px;color:var(--teal);font-family:-apple-system,sans-serif;text-decoration:none;font-weight:600;border-top:1px solid var(--gray);margin-top:8px;">← Back to Thrive Home</a>
   </div>
 </nav>
 
