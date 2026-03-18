@@ -187,7 +187,9 @@ tr:hover td{background:#fafaf8}
 <!-- ===== NAVIGATION (CLIENT) ===== -->
 <nav class="nav" id="clientNav">
   <div class="nav-inner">
-    <a href="#" class="nav-brand" onclick="navigate('home')">Thrive <span>Pilates</span></a>
+    <a href="#" class="nav-brand" onclick="navigate('home')" style="display:flex;align-items:center;">
+      <img src="thrive-logo.png" alt="Thrive Pilates" style="height:38px;width:auto;">
+    </a>
     <div class="nav-links" id="desktopNav">
       <button class="nav-link active" data-page="home" onclick="navigate('home')">Home</button>
       <button class="nav-link" data-page="schedule" onclick="navigate('schedule')">Schedule</button>
@@ -229,8 +231,8 @@ tr:hover td{background:#fafaf8}
 <!-- HOME -->
 <section id="page-home" class="page fade-in">
   <div class="hero">
-    <h1>Thrive Pilates</h1>
-    <p>Reformer &amp; mat Pilates in a boutique studio setting. Strengthen, lengthen, and move with purpose.</p>
+    <img src="thrive-logo-white.png" alt="Thrive Pilates" style="height:90px;width:auto;margin-bottom:16px;">
+    <p style="font-size:1.1rem;">Reformer &amp; mat Pilates in a boutique studio setting.<br>Strengthen, lengthen, and move with purpose.</p>
     <button class="btn btn-gold" onclick="navigate('schedule')" style="font-size:1.05rem;padding:14px 36px">Book a Class</button>
   </div>
   <div class="container mt-4">
