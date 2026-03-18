@@ -287,7 +287,15 @@ tr:hover td{background:#fafaf8}
 <section id="page-schedule" class="page hidden fade-in">
   <div class="container" style="padding-top:28px;padding-bottom:40px">
     <h2>Class Schedule</h2>
-    <p class="text-muted mb-3">Browse and book upcoming classes for the next 4 weeks.</p>
+    <p class="text-muted mb-3">Browse and book upcoming classes.</p>
+
+    <!-- Week nav -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <button onclick="shiftScheduleWeek(-1)" style="background:var(--card);border:1px solid var(--gray);border-radius:10px;padding:8px 16px;cursor:pointer;font-size:14px;font-family:-apple-system,sans-serif;color:var(--text);">← Prev</button>
+      <span id="schedule-week-label" style="font-size:14px;font-weight:600;color:var(--text);font-family:-apple-system,sans-serif;"></span>
+      <button onclick="shiftScheduleWeek(1)" style="background:var(--teal);border:none;border-radius:10px;padding:8px 16px;cursor:pointer;font-size:14px;font-family:-apple-system,sans-serif;color:white;font-weight:600;">Next →</button>
+    </div>
+
     <div class="filter-bar" id="scheduleFilters">
       <button class="filter-chip active" data-filter="all" onclick="filterSchedule('all')">All Classes</button>
       <button class="filter-chip" data-filter="mat" onclick="filterSchedule('mat')">Mat</button>
@@ -406,6 +414,7 @@ const state = {
   isAdmin: false,
   adminTab: 'admin-schedule',
   scheduleFilter: 'all',
+  scheduleWeekOffset: 0, // 0 = current week, 1 = next week, etc.
   classes: [],
   users: [],
   bookings: [],
@@ -582,6 +591,11 @@ function toggleMobileMenu() {
 // =======================================================================
 // SCHEDULE RENDERING
 // =======================================================================
+function shiftScheduleWeek(delta) {
+  state.scheduleWeekOffset = Math.max(0, (state.scheduleWeekOffset || 0) + delta);
+  renderSchedule();
+}
+
 function filterSchedule(filter) {
   state.scheduleFilter = filter;
   document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
@@ -592,14 +606,39 @@ function filterSchedule(filter) {
 function renderSchedule() {
   const container = document.getElementById('scheduleList');
   const now = new Date();
-  let filtered = state.classes.filter(c => new Date(c.date) > now);
+  const offset = state.scheduleWeekOffset || 0;
+
+  // Calculate week window
+  const weekStart = new Date(now);
+  weekStart.setHours(0,0,0,0);
+  weekStart.setDate(weekStart.getDate() + offset * 7);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 7);
+
+  // Update week label
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const labelEl = document.getElementById('schedule-week-label');
+  if (labelEl) {
+    if (offset === 0) labelEl.textContent = 'This Week';
+    else if (offset === 1) labelEl.textContent = 'Next Week';
+    else labelEl.textContent = `${months[weekStart.getMonth()]} ${weekStart.getDate()} – ${months[weekEnd.getDate() < weekStart.getDate() ? weekEnd.getMonth() : weekStart.getMonth()]} ${weekEnd.getDate()}`;
+  }
+
+  // Disable prev button if on current week
+  const prevBtn = document.querySelector('[onclick="shiftScheduleWeek(-1)"]');
+  if (prevBtn) prevBtn.disabled = offset === 0;
+
+  let filtered = state.classes.filter(c => {
+    const d = new Date(c.date);
+    return d >= weekStart && d < weekEnd;
+  });
 
   if (state.scheduleFilter !== 'all') {
     filtered = filtered.filter(c => c.type === state.scheduleFilter);
   }
 
   if (filtered.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="icon">📅</div><p>No classes found for this filter.</p></div>';
+    container.innerHTML = '<div class="empty-state"><div class="icon">📅</div><p>No classes this week. Try next week →</p></div>';
     return;
   }
 
@@ -1001,8 +1040,10 @@ function startBooking(classId) {
   if (!cls) return;
 
   if (!state.currentUser) {
-    showToast('Please log in or create an account first.');
+    showToast('Please log in or sign up to book a class.');
     navigate('account');
+    // Scroll to top smoothly
+    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 200);
     return;
   }
 
