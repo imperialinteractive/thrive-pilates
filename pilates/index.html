@@ -1,0 +1,2212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thrive Pilates — Book Your Class</title>
+<style>
+/* ===== RESET & BASE ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal:#31BAB9;--teal-dark:#279e9d;--teal-light:#e6f7f7;
+  --green:#ACBC20;--green-dark:#8fa01a;
+  --gold:#F0B724;--gold-light:#fdf3d7;
+  --bg:#F7F7F5;--text:#2C2C2C;--gray:#D2D3C5;--gray-dark:#8a8b80;
+  --white:#FFFFFF;--danger:#e74c3c;--danger-light:#fdecea;
+  --radius:12px;--radius-sm:8px;--shadow:0 2px 12px rgba(0,0,0,.08);
+  --shadow-lg:0 8px 30px rgba(0,0,0,.12);--transition:all .3s ease;
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);color:var(--text);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--teal);text-decoration:none}
+button{cursor:pointer;font-family:var(--font);border:none;outline:none}
+input,select,textarea{font-family:var(--font);border:1.5px solid var(--gray);border-radius:var(--radius-sm);padding:10px 14px;font-size:.95rem;width:100%;background:var(--white);transition:var(--transition)}
+input:focus,select:focus,textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(49,186,185,.15)}
+label{font-size:.85rem;font-weight:600;color:var(--text);display:block;margin-bottom:4px}
+h1{font-size:2rem;font-weight:700;letter-spacing:-.5px}
+h2{font-size:1.5rem;font-weight:700;letter-spacing:-.3px}
+h3{font-size:1.15rem;font-weight:600}
+
+/* ===== UTILITY ===== */
+.container{max-width:960px;margin:0 auto;padding:0 20px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 24px;border-radius:var(--radius-sm);font-size:.95rem;font-weight:600;transition:var(--transition);text-align:center}
+.btn-primary{background:var(--teal);color:var(--white)}
+.btn-primary:hover{background:var(--teal-dark);transform:translateY(-1px);box-shadow:var(--shadow)}
+.btn-secondary{background:var(--white);color:var(--teal);border:1.5px solid var(--teal)}
+.btn-secondary:hover{background:var(--teal-light)}
+.btn-gold{background:var(--gold);color:var(--white)}
+.btn-gold:hover{background:#d9a31f;transform:translateY(-1px)}
+.btn-danger{background:var(--danger);color:var(--white)}
+.btn-danger:hover{background:#c0392b}
+.btn-sm{padding:8px 16px;font-size:.85rem}
+.btn-full{width:100%}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600}
+.badge-teal{background:var(--teal-light);color:var(--teal-dark)}
+.badge-gold{background:var(--gold-light);color:#b8860b}
+.badge-green{background:#f0f4d4;color:var(--green-dark)}
+.badge-danger{background:var(--danger-light);color:var(--danger)}
+.badge-gray{background:#eee;color:var(--gray-dark)}
+.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;transition:var(--transition)}
+.card:hover{box-shadow:var(--shadow-lg)}
+.form-group{margin-bottom:16px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.text-center{text-align:center}
+.text-muted{color:var(--gray-dark);font-size:.85rem}
+.mt-1{margin-top:8px}.mt-2{margin-top:16px}.mt-3{margin-top:24px}.mt-4{margin-top:32px}
+.mb-2{margin-bottom:16px}.mb-3{margin-bottom:24px}
+.gap-2{gap:16px}
+.flex{display:flex}.flex-col{flex-direction:column}.items-center{align-items:center}.justify-between{justify-content:space-between}.flex-wrap{flex-wrap:wrap}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.hidden{display:none!important}
+.fade-in{animation:fadeIn .4s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:var(--white);padding:14px 24px;border-radius:var(--radius-sm);box-shadow:var(--shadow-lg);z-index:9999;animation:slideUp .3s ease;font-size:.9rem}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeInBg .2s ease}
+@keyframes fadeInBg{from{opacity:0}to{opacity:1}}
+.modal{background:var(--white);border-radius:var(--radius);max-width:500px;width:100%;max-height:90vh;overflow-y:auto;padding:28px;box-shadow:var(--shadow-lg);animation:fadeIn .3s ease}
+.modal h2{margin-bottom:20px}
+.modal-close{position:absolute;top:16px;right:16px;background:none;font-size:1.5rem;color:var(--gray-dark);line-height:1}
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--gray);margin-bottom:24px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab{padding:10px 18px;font-size:.9rem;font-weight:600;color:var(--gray-dark);border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;background:none;transition:var(--transition)}
+.tab.active{color:var(--teal);border-bottom-color:var(--teal)}
+.tab:hover{color:var(--teal-dark)}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.filter-chip{padding:6px 16px;border-radius:20px;font-size:.85rem;font-weight:500;background:var(--white);border:1.5px solid var(--gray);color:var(--text);transition:var(--transition);cursor:pointer}
+.filter-chip.active{background:var(--teal);color:var(--white);border-color:var(--teal)}
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th{text-align:left;padding:10px 12px;border-bottom:2px solid var(--gray);font-size:.8rem;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-dark)}
+td{padding:10px 12px;border-bottom:1px solid #eee}
+tr:hover td{background:#fafaf8}
+.empty-state{text-align:center;padding:60px 20px;color:var(--gray-dark)}
+.empty-state .icon{font-size:3rem;margin-bottom:12px}
+.stat-card{background:var(--white);border-radius:var(--radius);padding:20px;text-align:center;box-shadow:var(--shadow)}
+.stat-card .number{font-size:2rem;font-weight:700;color:var(--teal)}
+.stat-card .label{font-size:.8rem;color:var(--gray-dark);text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+
+/* ===== NAV ===== */
+.nav{background:var(--white);border-bottom:1px solid var(--gray);position:sticky;top:0;z-index:100}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;max-width:960px;margin:0 auto}
+.nav-brand{font-size:1.2rem;font-weight:700;color:var(--teal);letter-spacing:-.3px}
+.nav-brand span{color:var(--text)}
+.nav-links{display:flex;gap:4px;align-items:center}
+.nav-link{padding:8px 14px;font-size:.9rem;font-weight:500;color:var(--text);border-radius:var(--radius-sm);transition:var(--transition);background:none;cursor:pointer}
+.nav-link:hover,.nav-link.active{color:var(--teal);background:var(--teal-light)}
+.hamburger{display:none;background:none;font-size:1.5rem;color:var(--text);padding:4px}
+.mobile-menu{display:none;position:fixed;top:56px;left:0;right:0;bottom:0;background:var(--white);z-index:99;flex-direction:column;padding:20px;gap:4px;animation:fadeIn .2s ease}
+.mobile-menu.show{display:flex}
+.mobile-menu .nav-link{padding:14px;font-size:1rem;border-radius:var(--radius-sm)}
+
+@media(max-width:768px){
+  .nav-links{display:none}
+  .hamburger{display:block}
+  .form-row{grid-template-columns:1fr}
+  h1{font-size:1.6rem}
+  h2{font-size:1.3rem}
+}
+
+/* ===== HERO ===== */
+.hero{background:url('thrive-hero-bg.jpg') center 20%/cover no-repeat;color:var(--white);padding:80px 20px 60px;text-align:center;position:relative;overflow:hidden;min-height:320px}
+.hero::before{content:'';position:absolute;inset:0;background:rgba(30,120,120,0.35);pointer-events:none}
+.hero::after{content:'';pointer-events:none}
+.hero>*{position:relative;z-index:1}
+.hero h1{font-size:2.8rem;letter-spacing:-1px;margin-bottom:12px;position:relative}
+.hero p{font-size:1.15rem;opacity:.9;max-width:500px;margin:0 auto 28px;position:relative}
+@media(max-width:768px){.hero{padding:60px 20px}.hero h1{font-size:2rem}}
+
+/* ===== PRICING ===== */
+.pricing-category{margin-bottom:32px}
+.pricing-category h3{margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.price-card{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:var(--white);border-radius:var(--radius-sm);border:1.5px solid #eee;transition:var(--transition)}
+.price-card:hover{border-color:var(--teal);box-shadow:var(--shadow)}
+.price-card+.price-card{margin-top:8px}
+.price-card .name{font-weight:600;font-size:.95rem}
+.price-card .detail{font-size:.8rem;color:var(--gray-dark)}
+.price-card .price{font-size:1.2rem;font-weight:700;color:var(--teal)}
+.price-card.featured{border-color:var(--gold);background:linear-gradient(135deg,#fffdf5,#fff)}
+.price-card.featured::before{content:'Best Value';position:absolute;top:-10px;right:12px;background:var(--gold);color:var(--white);font-size:.7rem;font-weight:600;padding:2px 10px;border-radius:10px}
+.price-card{position:relative}
+
+/* ===== CLASS CARD ===== */
+.class-card{background:var(--white);border-radius:var(--radius);padding:18px;border:1.5px solid #eee;transition:var(--transition);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.class-card:hover{border-color:var(--teal);box-shadow:var(--shadow)}
+.class-card .class-info{flex:1}
+.class-card .class-type{font-weight:700;font-size:1rem;margin-bottom:2px}
+.class-card .class-meta{font-size:.85rem;color:var(--gray-dark);display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.class-card .class-meta span{display:flex;align-items:center;gap:3px}
+.class-card .spots{font-size:.8rem;font-weight:600}
+.class-card .spots.low{color:var(--danger)}
+.class-card .spots.ok{color:var(--green-dark)}
+.class-card+.class-card{margin-top:10px}
+
+/* ===== ACCOUNT ===== */
+.account-header{display:flex;align-items:center;gap:16px;margin-bottom:28px}
+.avatar{width:56px;height:56px;border-radius:50%;background:var(--teal);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:700}
+.package-card{padding:16px;border:1.5px solid #eee;border-radius:var(--radius-sm);margin-bottom:10px;background:var(--white)}
+.package-card .pkg-header{display:flex;justify-content:space-between;align-items:center}
+.package-card .pkg-name{font-weight:600}
+.package-card .pkg-credits{font-size:1.4rem;font-weight:700;color:var(--teal)}
+.package-card .pkg-expiry{font-size:.8rem;color:var(--gray-dark);margin-top:4px}
+.booking-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #eee}
+.booking-item:last-child{border-bottom:none}
+
+/* ===== ADMIN ===== */
+.admin-layout{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+.admin-sidebar{background:var(--text);color:var(--white);padding:20px 0}
+.admin-sidebar .brand{padding:0 20px 20px;font-size:1.1rem;font-weight:700;color:var(--teal);border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:8px}
+.admin-sidebar .brand small{display:block;font-size:.7rem;color:rgba(255,255,255,.5);font-weight:400;margin-top:2px}
+.admin-nav-link{display:block;padding:10px 20px;font-size:.9rem;color:rgba(255,255,255,.7);transition:var(--transition);cursor:pointer;background:none;width:100%;text-align:left;border:none;font-family:var(--font)}
+.admin-nav-link:hover,.admin-nav-link.active{color:var(--white);background:rgba(255,255,255,.08)}
+.admin-content{padding:28px;background:var(--bg);overflow-y:auto}
+.admin-content h2{margin-bottom:20px}
+@media(max-width:768px){
+  .admin-layout{grid-template-columns:1fr}
+  .admin-sidebar{display:flex;overflow-x:auto;padding:0;gap:0}
+  .admin-sidebar .brand{display:none}
+  .admin-nav-link{white-space:nowrap;padding:14px 16px;font-size:.85rem}
+  .admin-content{padding:20px}
+}
+
+/* ===== LOADING SPINNER ===== */
+.spinner{width:40px;height:40px;border:3px solid var(--gray);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;margin:20px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ===== WEEK HEADER ===== */
+.week-header{font-size:.95rem;font-weight:700;color:var(--teal-dark);padding:12px 0 8px;border-bottom:1px solid var(--gray);margin-bottom:12px;margin-top:20px}
+.week-header:first-of-type{margin-top:0}
+.day-header{font-size:.85rem;font-weight:600;color:var(--gray-dark);padding:8px 0 4px;text-transform:uppercase;letter-spacing:.5px}
+
+/* ===== SIGNATURE ===== */
+.signature-pad{border:2px dashed var(--gray);border-radius:var(--radius-sm);padding:16px;text-align:center;min-height:60px;display:flex;align-items:center;justify-content:center;font-style:italic;color:var(--gray-dark);font-size:1.2rem;font-family:'Brush Script MT',cursive,var(--font)}
+</style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION (CLIENT) ===== -->
+<nav class="nav" id="clientNav">
+  <div class="nav-inner">
+    <a href="#" class="nav-brand" onclick="navigate('home')" style="display:flex;align-items:center;">
+      <img src="thrive-logo.png" alt="Thrive Pilates" style="height:44px;width:auto;max-width:140px;object-fit:contain;">
+    </a>
+    <div class="nav-links" id="desktopNav">
+      <button class="nav-link active" data-page="home" onclick="navigate('home')">Home</button>
+      <button class="nav-link" data-page="schedule" onclick="navigate('schedule')">Schedule</button>
+      <button class="nav-link" data-page="pricing" onclick="navigate('pricing')">Pricing</button>
+      <button class="nav-link" data-page="account" onclick="navigate('account')">My Account</button>
+      <button class="nav-link" onclick="navigate('home');setTimeout(()=>document.getElementById('contact-section')?.scrollIntoView({behavior:'smooth'}),200)">Contact</button>
+    </div>
+    <button class="hamburger" onclick="toggleMobileMenu()">&#9776;</button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="nav-link active" data-page="home" onclick="navigate('home');toggleMobileMenu()">Home</button>
+    <button class="nav-link" data-page="schedule" onclick="navigate('schedule');toggleMobileMenu()">Schedule</button>
+    <button class="nav-link" data-page="pricing" onclick="navigate('pricing');toggleMobileMenu()">Pricing</button>
+    <button class="nav-link" data-page="account" onclick="navigate('account');toggleMobileMenu()">My Account</button>
+    <button class="nav-link" onclick="navigate('home');setTimeout(()=>document.getElementById('contact-section')?.scrollIntoView({behavior:'smooth'}),200);toggleMobileMenu()">Contact</button>
+    <button class="nav-link" onclick="navigate('admin-login');toggleMobileMenu()" style="color:var(--gray-dark);font-size:.8rem;margin-top:20px">Admin</button>
+  </div>
+</nav>
+
+<!-- ===== NAVIGATION (ADMIN) ===== -->
+<div class="admin-layout hidden" id="adminLayout">
+  <aside class="admin-sidebar">
+    <div class="brand">Thrive Pilates<small>Admin Dashboard</small></div>
+    <button class="admin-nav-link active" data-admin="admin-schedule" onclick="switchAdminTab('admin-schedule')">Schedule</button>
+    <button class="admin-nav-link" data-admin="admin-clients" onclick="switchAdminTab('admin-clients')">Clients</button>
+    <button class="admin-nav-link" data-admin="admin-bookings" onclick="switchAdminTab('admin-bookings')">Bookings</button>
+    <button class="admin-nav-link" data-admin="admin-packages" onclick="switchAdminTab('admin-packages')">Packages</button>
+    <button class="admin-nav-link" data-admin="admin-payments" onclick="switchAdminTab('admin-payments')">Payments</button>
+    <button class="admin-nav-link" data-admin="admin-reports" onclick="switchAdminTab('admin-reports')">📊 Reports</button>
+    <button class="admin-nav-link" onclick="exitAdmin()" style="color:rgba(255,255,255,.4);margin-top:20px">← Exit Admin</button>
+  </aside>
+  <main class="admin-content" id="adminContent">
+    <!-- Admin tabs render here -->
+  </main>
+</div>
+
+<!-- ===== CLIENT PAGES ===== -->
+<main id="clientMain">
+
+<!-- HOME -->
+<section id="page-home" class="page fade-in">
+  <div class="hero">
+    <img src="thrive-logo-white.png" alt="Thrive Pilates" style="height:80px;width:auto;margin-bottom:20px;display:block;margin-left:auto;margin-right:auto;">
+    <p style="font-size:1.1rem;margin-bottom:6px;">Reformer &amp; mat Pilates in a boutique studio setting.</p>
+    <p style="font-size:1rem;opacity:.85;margin-bottom:28px;">Strengthen, lengthen, and move with purpose.</p>
+    <button class="btn btn-gold" onclick="navigate('schedule')" style="font-size:1.05rem;padding:14px 36px">Book a Class</button>
+  </div>
+  <div class="container mt-4">
+    <div style="text-align:center;max-width:600px;margin:0 auto">
+      <h2>Welcome to Thrive</h2>
+      <p class="text-muted mt-1">A branch of Thrive Body Therapy clinic — our Pilates studio offers group mat classes, reformer sessions, and private instruction for all levels.</p>
+    </div>
+
+    <!-- CLASS DESCRIPTIONS -->
+    <div style="margin-top:40px;">
+      <h2 style="text-align:center;margin-bottom:24px;">Our Classes</h2>
+
+      <!-- Mat -->
+      <div class="card" style="margin-bottom:20px;padding:0;overflow:hidden;">
+        <img src="https://images.pexels.com/photos/8436703/pexels-photo-8436703.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Mat Pilates class" style="width:100%;height:200px;object-fit:cover;display:block;">
+        <div style="padding:20px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <div style="background:var(--teal);border-radius:12px;padding:8px 12px;font-size:1.2rem;">🧘‍♀️</div>
+          <div>
+            <h3 style="margin:0;">Mat Pilates</h3>
+            <p style="margin:2px 0 0;font-size:12px;font-weight:700;color:var(--teal);letter-spacing:.5px;">UP TO 10 PER CLASS</p>
+          </div>
+        </div>
+        <p style="color:var(--text-muted);line-height:1.7;font-size:14px;margin-bottom:12px;">A full-body workout rooted in the classical Pilates method — no reformer required. Mat classes focus on building deep core strength, improving posture, and developing body awareness through intentional, controlled movement. Each class is suitable for all fitness levels, with modifications offered throughout.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <span style="background:#f0fafa;color:var(--teal);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;">Without Props</span>
+          <span style="background:#f0fafa;color:var(--teal);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;">With Props</span>
+          <span style="background:#f0fafa;color:var(--text-muted);border-radius:20px;padding:4px 12px;font-size:12px;">All levels welcome</span>
+        </div>
+        <div style="margin-top:8px;font-size:12px;color:var(--text-muted);">Props may include resistance bands, Pilates rings, small balls, and light weights to add challenge and variety.</div>
+        </div>
+      </div>
+
+      <!-- Reformer -->
+      <div class="card" style="margin-bottom:20px;padding:0;overflow:hidden;">
+        <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&q=80" alt="Reformer Pilates class" style="width:100%;height:200px;object-fit:cover;display:block;">
+        <div style="padding:20px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <div style="background:var(--green);border-radius:12px;padding:8px 12px;font-size:1.2rem;">💪</div>
+          <div>
+            <h3 style="margin:0;">Reformer Pilates</h3>
+            <p style="margin:2px 0 0;font-size:12px;font-weight:700;color:var(--green);letter-spacing:.5px;">SMALL GROUP — MAX 5</p>
+          </div>
+        </div>
+        <p style="color:var(--text-muted);line-height:1.7;font-size:14px;margin-bottom:12px;">Experience Pilates on the reformer — a spring-loaded apparatus that adds resistance and support to every movement. The small class size means you receive personalised cues and corrections throughout. Expect a full-body session that targets strength, flexibility, and coordination while being gentle on your joints.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <span style="background:#f5f8e8;color:var(--green);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;">Spring resistance</span>
+          <span style="background:#f5f8e8;color:var(--green);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;">Low impact</span>
+          <span style="background:#f5f8e8;color:var(--text-muted);border-radius:20px;padding:4px 12px;font-size:12px;">All levels</span>
+        </div>
+        <div style="margin-top:8px;font-size:12px;color:var(--text-muted);">New to reformer? Book an intro private session first so we can get you comfortable on the equipment before joining a group class.</div>
+        </div>
+      </div>
+
+      <!-- Privates -->
+      <div class="card" style="margin-bottom:20px;padding:0;overflow:hidden;">
+        <img src="https://images.pexels.com/photos/8436715/pexels-photo-8436715.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Private Pilates session" style="width:100%;height:200px;object-fit:cover;display:block;">
+        <div style="padding:20px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <div style="background:var(--gold);border-radius:12px;padding:8px 12px;font-size:1.2rem;">🎯</div>
+          <div>
+            <h3 style="margin:0;">Private Sessions</h3>
+            <p style="margin:2px 0 0;font-size:12px;font-weight:700;color:#c49a10;letter-spacing:.5px;">1-ON-1 · MAT OR REFORMER</p>
+          </div>
+        </div>
+        <p style="color:var(--text-muted);line-height:1.7;font-size:14px;margin-bottom:12px;">Designed for those who want focused, individualised attention — whether you're recovering from an injury, managing a chronic condition, or simply want a program built around your body and goals. Led by Steph, a Registered Massage Therapist with a deep understanding of anatomy and movement dysfunction, private sessions integrate Pilates with a rehabilitation-informed approach.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <span style="background:#fffbea;color:#c49a10;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;">Rehab-informed</span>
+          <span style="background:#fffbea;color:#c49a10;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;">Injury recovery</span>
+          <span style="background:#fffbea;color:#c49a10;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;">Postpartum</span>
+          <span style="background:#fffbea;color:var(--text-muted);border-radius:20px;padding:4px 12px;font-size:12px;">Custom program</span>
+        </div>
+        </div>
+      </div>
+
+      <!-- Intro offer -->
+      <div class="card text-center" style="background:linear-gradient(135deg,var(--teal),#1a9a99);border:none;">
+        <div style="font-size:2rem;margin-bottom:8px;">✨</div>
+        <h3 style="color:white;margin:0;">New Client Intro Offer</h3>
+        <p style="color:rgba(255,255,255,0.85);margin:8px 0 16px;font-size:14px;">Try your first class for just $20 — any class type. Available to first-time clients only.</p>
+        <button class="btn btn-gold" onclick="navigate('schedule')" style="font-weight:700;">Book Your First Class →</button>
+      </div>
+    </div>
+  </div>
+  <!-- CONTACT SECTION -->
+  <div style="background:var(--teal);margin-top:40px;padding:48px 24px;" id="contact-section">
+    <div style="max-width:540px;margin:0 auto;">
+      <h2 style="color:white;margin-bottom:6px;text-align:center;">Get in Touch</h2>
+      <p style="color:rgba(255,255,255,0.85);margin-bottom:28px;text-align:center;font-size:14px;">Questions about classes, packages, or your first session? Send us a message and we'll get back to you shortly.</p>
+
+      <div style="background:white;border-radius:20px;padding:28px 24px;">
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;font-family:-apple-system,sans-serif;display:block;margin-bottom:5px;">YOUR NAME</label>
+            <input id="contactName" type="text" placeholder="Jane Smith" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid #e0e0e0;border-radius:10px;font-size:14px;font-family:-apple-system,sans-serif;outline:none;">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;font-family:-apple-system,sans-serif;display:block;margin-bottom:5px;">EMAIL</label>
+            <input id="contactEmail" type="email" placeholder="you@example.com" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid #e0e0e0;border-radius:10px;font-size:14px;font-family:-apple-system,sans-serif;outline:none;">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;font-family:-apple-system,sans-serif;display:block;margin-bottom:5px;">WHAT ARE YOU INTERESTED IN?</label>
+            <select id="contactInterest" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid #e0e0e0;border-radius:10px;font-size:14px;font-family:-apple-system,sans-serif;outline:none;background:white;">
+              <option value="">Select...</option>
+              <option>Mat Classes</option>
+              <option>Reformer Classes</option>
+              <option>Private Sessions</option>
+              <option>General enquiry</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;font-family:-apple-system,sans-serif;display:block;margin-bottom:5px;">MESSAGE</label>
+            <textarea id="contactMessage" rows="4" placeholder="Tell us a bit about yourself or ask any questions..." style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid #e0e0e0;border-radius:10px;font-size:14px;font-family:-apple-system,sans-serif;outline:none;resize:vertical;"></textarea>
+          </div>
+          <button onclick="submitContactForm()" style="background:var(--teal);color:white;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;width:100%;">Send Message →</button>
+          <p id="contactStatus" style="text-align:center;font-size:13px;font-family:-apple-system,sans-serif;color:var(--text-muted);margin:0;"></p>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:16px;margin-top:20px;flex-wrap:wrap;">
+        <div style="background:rgba(255,255,255,0.15);border-radius:14px;padding:14px 20px;flex:1;min-width:200px;">
+          <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:.5px;font-family:-apple-system,sans-serif;margin-bottom:4px;">EMAIL</div>
+          <a href="mailto:Steph@thrivebodytherapy.com" style="color:white;font-size:13px;font-family:-apple-system,sans-serif;text-decoration:none;font-weight:600;">Steph@thrivebodytherapy.com</a>
+        </div>
+        <div style="background:rgba(255,255,255,0.15);border-radius:14px;padding:14px 20px;flex:1;min-width:200px;">
+          <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:.5px;font-family:-apple-system,sans-serif;margin-bottom:4px;">LOCATION</div>
+          <p style="color:white;font-size:13px;font-family:-apple-system,sans-serif;margin:0;font-weight:600;">13105 Dale Meadows Rd</p>
+          <p style="color:rgba(255,255,255,0.8);font-size:12px;font-family:-apple-system,sans-serif;margin:2px 0 0;">Summerland, BC · Upstairs in the barn</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="height:60px"></div>
+</section>
+
+<!-- SCHEDULE -->
+<section id="page-schedule" class="page hidden fade-in">
+  <div class="container" style="padding-top:28px;padding-bottom:40px">
+    <h2>Class Schedule</h2>
+    <p class="text-muted mb-3">Browse and book upcoming classes.</p>
+
+    <!-- Week nav -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <button onclick="shiftScheduleWeek(-1)" style="background:var(--card);border:1px solid var(--gray);border-radius:10px;padding:8px 16px;cursor:pointer;font-size:14px;font-family:-apple-system,sans-serif;color:var(--text);">← Prev</button>
+      <span id="schedule-week-label" style="font-size:14px;font-weight:600;color:var(--text);font-family:-apple-system,sans-serif;"></span>
+      <button onclick="shiftScheduleWeek(1)" style="background:var(--teal);border:none;border-radius:10px;padding:8px 16px;cursor:pointer;font-size:14px;font-family:-apple-system,sans-serif;color:white;font-weight:600;">Next →</button>
+    </div>
+
+    <div class="filter-bar" id="scheduleFilters">
+      <button class="filter-chip active" data-filter="all" onclick="filterSchedule('all')">All Classes</button>
+      <button class="filter-chip" data-filter="mat" onclick="filterSchedule('mat')">Mat</button>
+      <button class="filter-chip" data-filter="reformer" onclick="filterSchedule('reformer')">Reformer</button>
+      <button class="filter-chip" data-filter="private-mat" onclick="filterSchedule('private-mat')">Private Mat</button>
+      <button class="filter-chip" data-filter="private-reformer" onclick="filterSchedule('private-reformer')">Private Reformer</button>
+    </div>
+    <div id="scheduleList">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="page-pricing" class="page hidden fade-in">
+  <div class="container" style="padding-top:28px;padding-bottom:40px">
+    <h2>Pricing</h2>
+    <p class="text-muted mb-3">Flexible packages to suit your practice. All prices in AUD.</p>
+
+    <div class="pricing-category">
+      <h3><span class="badge badge-teal">Mat Group Classes</span></h3>
+      <div class="price-card"><div><div class="name">Drop-in</div><div class="detail">Single class, no commitment</div></div><div class="price">$28</div></div>
+      <div class="price-card"><div><div class="name">5-Class Pack</div><div class="detail">3-month expiry</div></div><div class="price">$125</div></div>
+      <div class="price-card featured"><div><div class="name">10-Class Pack</div><div class="detail">6-month expiry</div></div><div class="price">$230</div></div>
+      <div class="price-card"><div><div class="name">Monthly Unlimited</div><div class="detail">Unlimited mat classes for 1 calendar month</div></div><div class="price">$140<span class="text-muted" style="font-size:.7rem;font-weight:400">/mo</span></div></div>
+    </div>
+
+    <div class="pricing-category">
+      <h3><span class="badge badge-teal">Reformer Group Classes</span></h3>
+      <div class="price-card"><div><div class="name">Drop-in</div><div class="detail">Single class, no commitment</div></div><div class="price">$38</div></div>
+      <div class="price-card"><div><div class="name">5-Class Pack</div><div class="detail">3-month expiry</div></div><div class="price">$175</div></div>
+      <div class="price-card featured"><div><div class="name">10-Class Pack</div><div class="detail">6-month expiry</div></div><div class="price">$330</div></div>
+      <div class="price-card"><div><div class="name">Monthly Unlimited</div><div class="detail">Unlimited reformer classes for 1 calendar month</div></div><div class="price">$195<span class="text-muted" style="font-size:.7rem;font-weight:400">/mo</span></div></div>
+    </div>
+
+    <div class="pricing-category">
+      <h3><span class="badge badge-green">Private Sessions — Mat</span></h3>
+      <div class="price-card"><div><div class="name">Single Session</div><div class="detail">1-on-1 mat session</div></div><div class="price">$85</div></div>
+      <div class="price-card"><div><div class="name">5-Session Pack</div><div class="detail">6-month expiry</div></div><div class="price">$390</div></div>
+    </div>
+
+    <div class="pricing-category">
+      <h3><span class="badge badge-green">Private Sessions — Reformer</span></h3>
+      <div class="price-card"><div><div class="name">Single Session</div><div class="detail">1-on-1 reformer session</div></div><div class="price">$110</div></div>
+      <div class="price-card"><div><div class="name">5-Session Pack</div><div class="detail">6-month expiry</div></div><div class="price">$500</div></div>
+    </div>
+
+    <div class="pricing-category">
+      <h3><span class="badge badge-gold">Intro Offer</span></h3>
+      <div class="price-card featured" style="border-color:var(--gold)"><div><div class="name">First Class — Any Type</div><div class="detail">New clients only. One-time offer.</div></div><div class="price" style="color:var(--gold)">$20</div></div>
+    </div>
+
+    <div class="text-center mt-3">
+      <button class="btn btn-primary" onclick="navigate('schedule')">View Schedule &amp; Book</button>
+    </div>
+  </div>
+</section>
+
+<!-- MY ACCOUNT -->
+<section id="page-account" class="page hidden fade-in">
+  <div class="container" style="padding-top:28px;padding-bottom:40px">
+    <!-- Login/Signup or Account View rendered by JS -->
+    <div id="accountContent"></div>
+  </div>
+</section>
+
+<!-- BOOKING FLOW (modal-like full page) -->
+<section id="page-booking" class="page hidden fade-in">
+  <div class="container" style="padding-top:28px;padding-bottom:40px">
+    <div id="bookingContent"></div>
+  </div>
+</section>
+
+<!-- ADMIN LOGIN -->
+<section id="page-admin-login" class="page hidden fade-in">
+  <div class="container" style="padding-top:60px;padding-bottom:40px;max-width:400px">
+    <div class="card">
+      <h2 class="text-center">Admin Login</h2>
+      <p class="text-muted text-center mb-3">Enter the admin password to continue.</p>
+      <div class="form-group">
+        <label for="adminPassword">Password</label>
+        <input type="password" id="adminPassword" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')attemptAdminLogin()">
+      </div>
+      <button class="btn btn-primary btn-full" onclick="attemptAdminLogin()">Login</button>
+      <p id="adminLoginError" class="text-muted mt-2 hidden" style="color:var(--danger);text-align:center">Incorrect password</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ===== MODAL CONTAINER ===== -->
+<div id="modalContainer"></div>
+
+<!-- ===== TOAST CONTAINER ===== -->
+<div id="toastContainer"></div>
+
+<script>
+// =======================================================================
+// THRIVE PILATES — SPA APPLICATION
+// =======================================================================
+// TODO: Replace these placeholders with real Supabase/Stripe credentials
+const SUPABASE_URL = 'SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'SUPABASE_ANON_KEY';
+const STRIPE_PUBLISHABLE_KEY = 'STRIPE_PUBLISHABLE_KEY';
+
+// NOTE: This hardcoded password should be replaced with proper auth in production
+const ADMIN_PASSWORD = 'thrive2026admin';
+
+// =======================================================================
+// STATE
+// =======================================================================
+const state = {
+  currentPage: 'home',
+  currentUser: null,
+  isAdmin: false,
+  adminTab: 'admin-schedule',
+  scheduleFilter: 'all',
+  scheduleWeekOffset: 0, // 0 = current week, 1 = next week, etc.
+  classes: [],
+  users: [],
+  bookings: [],
+  packages: [],
+  payments: [],
+};
+
+// =======================================================================
+// MOCK DATA
+// =======================================================================
+function generateMockData() {
+  const instructors = ['Sarah M.', 'Kate L.', 'Jess W.', 'Liam T.'];
+  const classTypes = [
+    { type: 'mat', label: 'Mat Pilates', maxCap: 10 },
+    { type: 'reformer', label: 'Reformer Pilates', maxCap: 5 },
+    { type: 'private-mat', label: 'Private Mat', maxCap: 1 },
+    { type: 'private-reformer', label: 'Private Reformer', maxCap: 1 },
+  ];
+  const durations = [50, 55, 60];
+  const timeSlots = [
+    { h: 6, m: 0 }, { h: 7, m: 0 }, { h: 8, m: 30 },
+    { h: 9, m: 30 }, { h: 10, m: 30 }, { h: 12, m: 0 },
+    { h: 16, m: 30 }, { h: 17, m: 30 }, { h: 18, m: 30 },
+  ];
+
+  const classes = [];
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  for (let dayOffset = 0; dayOffset < 28; dayOffset++) {
+    const date = new Date(today);
+    date.setDate(date.getDate() + dayOffset);
+    const dow = date.getDay();
+    if (dow === 0) continue; // No Sunday classes
+
+    // Determine classes for this day
+    let dayClasses = [];
+    if (dow >= 1 && dow <= 5) {
+      // Weekdays: mix of all types
+      dayClasses.push(
+        { ...classTypes[0], time: timeSlots[0] },  // 6am Mat
+        { ...classTypes[1], time: timeSlots[1] },  // 7am Reformer
+        { ...classTypes[0], time: timeSlots[3] },  // 9:30 Mat
+        { ...classTypes[1], time: timeSlots[4] },  // 10:30 Reformer
+        { ...classTypes[2], time: timeSlots[5] },  // 12pm Private Mat
+        { ...classTypes[0], time: timeSlots[6] },  // 4:30 Mat
+        { ...classTypes[1], time: timeSlots[7] },  // 5:30 Reformer
+        { ...classTypes[0], time: timeSlots[8] },  // 6:30 Mat
+      );
+      // Add a private reformer on some days
+      if (dow === 1 || dow === 3 || dow === 5) {
+        dayClasses.push({ ...classTypes[3], time: timeSlots[2] }); // 8:30 Private Reformer
+      }
+    } else if (dow === 6) {
+      // Saturday
+      dayClasses.push(
+        { ...classTypes[0], time: timeSlots[1] },  // 7am Mat
+        { ...classTypes[1], time: timeSlots[2] },  // 8:30 Reformer
+        { ...classTypes[0], time: timeSlots[3] },  // 9:30 Mat
+        { ...classTypes[1], time: timeSlots[4] },  // 10:30 Reformer
+      );
+    }
+
+    dayClasses.forEach(cls => {
+      const classDate = new Date(date);
+      classDate.setHours(cls.time.h, cls.time.m, 0, 0);
+      const booked = cls.maxCap === 1 ? Math.floor(Math.random() * 2) : Math.floor(Math.random() * (cls.maxCap - 1));
+      classes.push({
+        id: 'cls_' + classes.length,
+        type: cls.type,
+        label: cls.label,
+        date: classDate.toISOString(),
+        duration: durations[Math.floor(Math.random() * durations.length)],
+        maxCapacity: cls.maxCap,
+        bookedCount: booked,
+        instructor: instructors[Math.floor(Math.random() * instructors.length)],
+      });
+    });
+  }
+
+  // Mock users
+  const users = [
+    {
+      id: 'usr_1', name: 'Emma Wilson', email: 'emma@example.com', phone: '0412 345 678', password: 'password123',
+      healthHistory: { injuries: 'Minor lower back issue', conditions: 'None', medications: 'None', pregnancy: 'No', experience: 'Intermediate', goals: ['Core strength', 'Flexibility', 'General fitness'], emergencyName: 'John Wilson', emergencyPhone: '0400 111 222', waiverSigned: true, signatureName: 'Emma Wilson' },
+      packages: [
+        { id: 'pkg_1', type: 'mat', name: 'Mat 10-Class Pack', creditsTotal: 10, creditsRemaining: 7, expiresAt: new Date(Date.now() + 90 * 86400000).toISOString(), isUnlimited: false },
+        { id: 'pkg_2', type: 'reformer', name: 'Reformer Monthly Unlimited', creditsTotal: null, creditsRemaining: null, expiresAt: new Date(Date.now() + 20 * 86400000).toISOString(), isUnlimited: true },
+      ],
+      isIntroUsed: true,
+    },
+    {
+      id: 'usr_2', name: 'Sophie Chen', email: 'sophie@example.com', phone: '0423 456 789', password: 'password123',
+      healthHistory: { injuries: 'None', conditions: 'Mild scoliosis', medications: 'None', pregnancy: 'Postpartum <6mo', experience: 'Beginner', goals: ['Postnatal recovery', 'Core strength'], emergencyName: 'David Chen', emergencyPhone: '0400 222 333', waiverSigned: true, signatureName: 'Sophie Chen' },
+      packages: [
+        { id: 'pkg_3', type: 'mat', name: 'Mat 5-Class Pack', creditsTotal: 5, creditsRemaining: 2, expiresAt: new Date(Date.now() + 45 * 86400000).toISOString(), isUnlimited: false },
+      ],
+      isIntroUsed: true,
+    },
+    {
+      id: 'usr_3', name: 'Tom Baker', email: 'tom@example.com', phone: '0434 567 890', password: 'password123',
+      healthHistory: { injuries: 'ACL reconstruction 2024', conditions: 'None', medications: 'Ibuprofen as needed', pregnancy: 'No', experience: 'None', goals: ['Injury rehab', 'General fitness'], emergencyName: 'Lisa Baker', emergencyPhone: '0400 333 444', waiverSigned: true, signatureName: 'Tom Baker' },
+      parq: { flagged: true, flags: ['Bone, joint, or soft tissue problem that could be worsened by activity', 'Currently taking prescribed medications for a chronic medical condition'] },
+      packages: [],
+      isIntroUsed: false,
+    },
+  ];
+
+  // Mock bookings (some upcoming, some past)
+  const bookings = [];
+  const futureClasses = classes.filter(c => new Date(c.date) > new Date());
+  if (futureClasses.length > 3) {
+    bookings.push(
+      { id: 'bk_1', userId: 'usr_1', classId: futureClasses[0].id, bookedAt: new Date(Date.now() - 2 * 86400000).toISOString(), status: 'confirmed', creditType: 'mat' },
+      { id: 'bk_2', userId: 'usr_1', classId: futureClasses[5]?.id || futureClasses[1].id, bookedAt: new Date(Date.now() - 86400000).toISOString(), status: 'confirmed', creditType: 'reformer' },
+      { id: 'bk_3', userId: 'usr_2', classId: futureClasses[2].id, bookedAt: new Date(Date.now() - 3 * 86400000).toISOString(), status: 'confirmed', creditType: 'mat' },
+    );
+  }
+
+  // Mock payments
+  const payments = [
+    { id: 'pay_1', userId: 'usr_1', userName: 'Emma Wilson', amount: 230, description: 'Mat 10-Class Pack', method: 'Stripe', date: new Date(Date.now() - 10 * 86400000).toISOString(), stripeId: 'pi_mock_abc123' },
+    { id: 'pay_2', userId: 'usr_1', userName: 'Emma Wilson', amount: 195, description: 'Reformer Monthly Unlimited', method: 'Stripe', date: new Date(Date.now() - 5 * 86400000).toISOString(), stripeId: 'pi_mock_def456' },
+    { id: 'pay_3', userId: 'usr_2', userName: 'Sophie Chen', amount: 125, description: 'Mat 5-Class Pack', method: 'Cash', date: new Date(Date.now() - 15 * 86400000).toISOString(), stripeId: null },
+  ];
+
+  state.classes = classes;
+  state.users = users;
+  state.bookings = bookings;
+  state.payments = payments;
+}
+
+// =======================================================================
+// NAVIGATION
+// =======================================================================
+function navigate(page) {
+  // Hide admin layout if navigating to client page
+  if (!page.startsWith('admin') || page === 'admin-login') {
+    document.getElementById('adminLayout').classList.add('hidden');
+    document.getElementById('clientNav').classList.remove('hidden');
+    document.getElementById('clientMain').classList.remove('hidden');
+  }
+
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+
+  // Show target page
+  const target = document.getElementById('page-' + page);
+  if (target) {
+    target.classList.remove('hidden');
+    target.classList.remove('fade-in');
+    void target.offsetWidth; // trigger reflow
+    target.classList.add('fade-in');
+  }
+
+  // Update nav active states
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.querySelectorAll(`.nav-link[data-page="${page}"]`).forEach(l => l.classList.add('active'));
+
+  state.currentPage = page;
+
+  // Render dynamic content
+  if (page === 'schedule') renderSchedule();
+  if (page === 'account') renderAccount();
+  if (page === 'admin-login') { /* already static */ }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleMobileMenu() {
+  document.getElementById('mobileMenu').classList.toggle('show');
+}
+
+// =======================================================================
+// SCHEDULE RENDERING
+// =======================================================================
+function shiftScheduleWeek(delta) {
+  state.scheduleWeekOffset = Math.max(0, (state.scheduleWeekOffset || 0) + delta);
+  renderSchedule();
+}
+
+function filterSchedule(filter) {
+  state.scheduleFilter = filter;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll(`.filter-chip[data-filter="${filter}"]`).forEach(c => c.classList.add('active'));
+  renderSchedule();
+}
+
+function renderSchedule() {
+  const container = document.getElementById('scheduleList');
+  const now = new Date();
+  const offset = state.scheduleWeekOffset || 0;
+
+  // Calculate week window
+  const weekStart = new Date(now);
+  weekStart.setHours(0,0,0,0);
+  weekStart.setDate(weekStart.getDate() + offset * 7);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 7);
+
+  // Update week label
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const labelEl = document.getElementById('schedule-week-label');
+  if (labelEl) {
+    if (offset === 0) labelEl.textContent = 'This Week';
+    else if (offset === 1) labelEl.textContent = 'Next Week';
+    else labelEl.textContent = `${months[weekStart.getMonth()]} ${weekStart.getDate()} – ${months[weekEnd.getDate() < weekStart.getDate() ? weekEnd.getMonth() : weekStart.getMonth()]} ${weekEnd.getDate()}`;
+  }
+
+  // Disable prev button if on current week
+  const prevBtn = document.querySelector('[onclick="shiftScheduleWeek(-1)"]');
+  if (prevBtn) prevBtn.disabled = offset === 0;
+
+  let filtered = state.classes.filter(c => {
+    const d = new Date(c.date);
+    return d >= weekStart && d < weekEnd;
+  });
+
+  if (state.scheduleFilter !== 'all') {
+    filtered = filtered.filter(c => c.type === state.scheduleFilter);
+  }
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">📅</div><p>No classes this week. Try next week →</p></div>';
+    return;
+  }
+
+  // Group by date
+  const grouped = {};
+  filtered.forEach(c => {
+    const dateKey = new Date(c.date).toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' });
+    if (!grouped[dateKey]) grouped[dateKey] = [];
+    grouped[dateKey].push(c);
+  });
+
+  let html = '';
+  for (const [dateLabel, classes] of Object.entries(grouped)) {
+    html += `<div class="day-header">${dateLabel}</div>`;
+    classes.forEach(cls => {
+      const spotsLeft = cls.maxCapacity - cls.bookedCount;
+      const spotsClass = spotsLeft <= 2 ? 'low' : 'ok';
+      const spotsText = spotsLeft === 0 ? 'Full' : `${spotsLeft} spot${spotsLeft !== 1 ? 's' : ''} left`;
+      const time = new Date(cls.date).toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit', hour12: true });
+      const typeColor = cls.type.includes('reformer') ? 'badge-teal' : cls.type.includes('private') ? 'badge-green' : 'badge-teal';
+
+      html += `
+        <div class="class-card">
+          <div class="class-info">
+            <div class="class-type">${cls.label}</div>
+            <div class="class-meta">
+              <span>🕐 ${time}</span>
+              <span>⏱ ${cls.duration}min</span>
+              <span>👤 ${cls.instructor}</span>
+            </div>
+            <div class="mt-1"><span class="spots ${spotsClass}">${spotsText}</span></div>
+          </div>
+          <button class="btn btn-primary btn-sm" ${spotsLeft === 0 ? 'disabled' : ''} onclick="startBooking('${cls.id}')">
+            ${spotsLeft === 0 ? 'Full' : 'Book'}
+          </button>
+        </div>`;
+    });
+  }
+  container.innerHTML = html;
+}
+
+// =======================================================================
+// ACCOUNT RENDERING
+// =======================================================================
+function renderAccount() {
+  const container = document.getElementById('accountContent');
+
+  if (!state.currentUser) {
+    // Show login/signup
+    container.innerHTML = `
+      <h2>My Account</h2>
+      <div class="tabs mt-2">
+        <button class="tab active" onclick="switchAccountTab('login',this)">Login</button>
+        <button class="tab" onclick="switchAccountTab('signup',this)">Sign Up</button>
+      </div>
+      <div id="accountTabContent">
+        ${renderLoginForm()}
+      </div>
+    `;
+    return;
+  }
+
+  // Show account details
+  const user = state.currentUser;
+  const initials = user.name.split(' ').map(n => n[0]).join('');
+  const userBookings = state.bookings.filter(b => b.userId === user.id);
+  const upcoming = userBookings.filter(b => {
+    const cls = state.classes.find(c => c.id === b.classId);
+    return cls && new Date(cls.date) > new Date() && b.status === 'confirmed';
+  });
+  const past = userBookings.filter(b => {
+    const cls = state.classes.find(c => c.id === b.classId);
+    return cls && new Date(cls.date) <= new Date();
+  });
+
+  let packagesHtml = '';
+  if (user.packages.length === 0) {
+    packagesHtml = '<p class="text-muted">No active packages. <a href="#" onclick="navigate(\'pricing\')">View pricing</a></p>';
+  } else {
+    user.packages.forEach(pkg => {
+      const expDate = new Date(pkg.expiresAt).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+      const isExpired = new Date(pkg.expiresAt) < new Date();
+      packagesHtml += `
+        <div class="package-card">
+          <div class="pkg-header">
+            <div>
+              <div class="pkg-name">${pkg.name}</div>
+              <div class="pkg-expiry">${isExpired ? '<span style="color:var(--danger)">Expired</span>' : 'Expires ' + expDate}</div>
+            </div>
+            <div class="pkg-credits">${pkg.isUnlimited ? '∞' : pkg.creditsRemaining}</div>
+          </div>
+        </div>`;
+    });
+  }
+
+  let upcomingHtml = '';
+  if (upcoming.length === 0) {
+    upcomingHtml = '<p class="text-muted">No upcoming bookings.</p>';
+  } else {
+    upcoming.forEach(b => {
+      const cls = state.classes.find(c => c.id === b.classId);
+      if (!cls) return;
+      const classDate = new Date(cls.date);
+      const dateStr = classDate.toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
+      const timeStr = classDate.toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit', hour12: true });
+      const hoursUntil = (classDate - new Date()) / 3600000;
+      const canCancel = hoursUntil > 24;
+
+      upcomingHtml += `
+        <div class="booking-item">
+          <div>
+            <div style="font-weight:600">${cls.label}</div>
+            <div class="text-muted">${dateStr} at ${timeStr} — ${cls.instructor}</div>
+          </div>
+          <div>
+            ${canCancel
+              ? `<button class="btn btn-secondary btn-sm" onclick="cancelBooking('${b.id}')">Cancel</button>`
+              : `<span class="badge badge-gray" title="Cancellation window has closed (less than 24 hours before class)">Can't cancel</span>`
+            }
+          </div>
+        </div>`;
+    });
+  }
+
+  container.innerHTML = `
+    <div class="account-header">
+      <div class="avatar">${initials}</div>
+      <div>
+        <h2 style="margin-bottom:0">${user.name}</h2>
+        <p class="text-muted">${user.email}</p>
+      </div>
+      <button class="btn btn-secondary btn-sm" style="margin-left:auto" onclick="logout()">Log Out</button>
+    </div>
+
+    <h3>My Packages</h3>
+    <div class="mt-1 mb-3">${packagesHtml}</div>
+
+    <h3>Upcoming Bookings</h3>
+    <div class="mt-1 mb-3">${upcomingHtml}</div>
+
+    <h3>Booking History</h3>
+    <div class="mt-1">
+      ${past.length === 0 ? '<p class="text-muted">No past bookings yet.</p>' : past.map(b => {
+        const cls = state.classes.find(c => c.id === b.classId);
+        if (!cls) return '';
+        const dateStr = new Date(cls.date).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
+        return `<div class="booking-item"><div><div style="font-weight:600">${cls.label}</div><div class="text-muted">${dateStr} — ${cls.instructor}</div></div><span class="badge badge-gray">${b.status === 'cancelled' ? 'Cancelled' : 'Attended'}</span></div>`;
+      }).join('')}
+    </div>
+  `;
+}
+
+function switchAccountTab(tab, btnEl) {
+  document.querySelectorAll('#page-account .tab').forEach(t => t.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+  const content = document.getElementById('accountTabContent');
+  content.innerHTML = tab === 'login' ? renderLoginForm() : renderSignupForm();
+}
+
+function renderLoginForm() {
+  return `
+    <div style="max-width:400px">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="Your password" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doLogin()">Log In</button>
+      <p class="text-muted text-center mt-2" id="loginError"></p>
+    </div>`;
+}
+
+function renderSignupForm() {
+  return `
+    <div style="max-width:560px">
+      <h3 class="mb-2">Create Your Account</h3>
+      <div class="form-row">
+        <div class="form-group"><label>Full Name *</label><input type="text" id="signupName" placeholder="Jane Smith"></div>
+        <div class="form-group"><label>Email *</label><input type="email" id="signupEmail" placeholder="you@example.com"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Phone *</label><input type="tel" id="signupPhone" placeholder="0412 345 678"></div>
+        <div class="form-group"><label>Password *</label><input type="password" id="signupPassword" placeholder="Min 8 characters"></div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--gray);margin:20px 0">
+      <h3 class="mb-2">Health History</h3>
+
+      <div class="form-group">
+        <label>Injuries or Surgeries</label>
+        <textarea id="signupInjuries" rows="2" placeholder="e.g. ACL surgery 2023, lower back disc issue"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Chronic Conditions</label>
+        <textarea id="signupConditions" rows="2" placeholder="e.g. Mild scoliosis, osteoporosis"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Current Medications</label>
+        <textarea id="signupMedications" rows="2" placeholder="e.g. Ibuprofen as needed"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Pregnancy / Postpartum Status</label>
+          <select id="signupPregnancy">
+            <option value="No">No</option>
+            <option value="Currently pregnant">Currently pregnant</option>
+            <option value="Postpartum <6mo">Postpartum &lt;6 months</option>
+            <option value="Postpartum 6-12mo">Postpartum 6-12 months</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Pilates Experience Level</label>
+          <select id="signupExperience">
+            <option value="None">None</option>
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Goals (select all that apply)</label>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+          ${['Core strength','Flexibility','Injury rehab','Postnatal recovery','General fitness','Weight loss'].map(g => `
+            <label style="display:flex;align-items:center;gap:4px;font-weight:400;font-size:.9rem;cursor:pointer">
+              <input type="checkbox" class="signup-goal" value="${g}"> ${g}
+            </label>`).join('')}
+        </div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--gray);margin:20px 0">
+      <h3 class="mb-2">Emergency Contact</h3>
+      <div class="form-row">
+        <div class="form-group"><label>Emergency Contact Name *</label><input type="text" id="signupEmergName" placeholder="Full name"></div>
+        <div class="form-group"><label>Emergency Contact Phone *</label><input type="tel" id="signupEmergPhone" placeholder="0400 000 000"></div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--gray);margin:20px 0">
+      <h3 class="mb-2" style="color:var(--teal)">PAR-Q+ Health Screening</h3>
+      <p style="font-size:.85rem;color:var(--gray-dark);margin-bottom:16px;">The PAR-Q+ helps us ensure Pilates is safe for you. Please answer honestly — if you flag any questions, we'll reach out before your first class.</p>
+
+      <div style="background:#fff8f0;border:1px solid #f0b724;border-radius:var(--radius-sm);padding:16px;margin-bottom:16px;">
+        <p style="font-size:.8rem;font-weight:700;color:var(--gray-dark);margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px;">Section 1 — General Health (answer Yes or No)</p>
+        ${[
+          {id:'parq1', q:'Has your doctor ever said that you have a heart condition OR high blood pressure?'},
+          {id:'parq2', q:'Do you feel pain in your chest at rest, during your daily activities of living, OR when you do physical activity?'},
+          {id:'parq3', q:'Do you lose balance because of dizziness OR have you lost consciousness in the last 12 months?'},
+          {id:'parq4', q:'Have you ever been diagnosed with another chronic medical condition (other than heart disease or high blood pressure)?'},
+          {id:'parq5', q:'Are you currently taking prescribed medications for a chronic medical condition?'},
+          {id:'parq6', q:'Do you currently have (or have had within the past 12 months) a bone, joint, or soft tissue problem that could be made worse by becoming more physically active?'},
+          {id:'parq7', q:'Has your doctor ever said that you should only do medically supervised physical activity?'},
+        ].map(item => `
+          <div style="margin-bottom:12px;">
+            <p style="font-size:.85rem;color:var(--text);margin-bottom:6px;">${item.q}</p>
+            <div style="display:flex;gap:16px;">
+              <label style="display:flex;align-items:center;gap:6px;font-weight:400;cursor:pointer;font-size:.9rem;">
+                <input type="radio" name="${item.id}" value="yes" class="parq-radio"> Yes
+              </label>
+              <label style="display:flex;align-items:center;gap:6px;font-weight:400;cursor:pointer;font-size:.9rem;">
+                <input type="radio" name="${item.id}" value="no" class="parq-radio"> No
+              </label>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--gray);margin:20px 0">
+      <h3 class="mb-2">Liability Waiver</h3>
+      <div class="form-group">
+        <div style="background:var(--bg);padding:16px;border-radius:var(--radius-sm);font-size:.85rem;max-height:120px;overflow-y:auto;margin-bottom:12px;color:var(--gray-dark)">
+          I acknowledge that participation in Pilates classes involves inherent risks, including but not limited to physical injury. I confirm that I have disclosed all relevant health information and agree to follow instructor guidance. I release Thrive Body Therapy and its instructors from any liability arising from my participation in classes. I understand that a 24-hour cancellation policy applies and that late cancellations will not receive a credit refund.
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;font-weight:400;cursor:pointer">
+          <input type="checkbox" id="signupWaiver"> I agree to the liability waiver *
+        </label>
+      </div>
+      <div class="form-group">
+        <label>E-Signature (type your full name) *</label>
+        <input type="text" id="signupSignature" placeholder="Your full legal name">
+        <div class="signature-pad mt-1" id="signaturePreview">Your signature will appear here</div>
+      </div>
+
+      <button class="btn btn-primary btn-full mt-2" onclick="doSignup()">Create Account</button>
+      <p class="text-muted text-center mt-2" id="signupError"></p>
+    </div>`;
+}
+
+// =======================================================================
+// AUTH
+// =======================================================================
+function doLogin() {
+  const email = document.getElementById('loginEmail')?.value?.trim();
+  const password = document.getElementById('loginPassword')?.value;
+  const errorEl = document.getElementById('loginError');
+
+  if (!email || !password) { errorEl.textContent = 'Please enter email and password.'; return; }
+
+  // TODO: Replace with Supabase auth — supabase.auth.signInWithPassword({ email, password })
+  const user = state.users.find(u => u.email === email && u.password === password);
+  if (!user) { errorEl.textContent = 'Invalid email or password.'; return; }
+
+  state.currentUser = user;
+  showToast('Welcome back, ' + user.name.split(' ')[0] + '!');
+  renderAccount();
+}
+
+function doSignup() {
+  const name = document.getElementById('signupName')?.value?.trim();
+  const email = document.getElementById('signupEmail')?.value?.trim();
+  const phone = document.getElementById('signupPhone')?.value?.trim();
+  const password = document.getElementById('signupPassword')?.value;
+  const injuries = document.getElementById('signupInjuries')?.value?.trim();
+  const conditions = document.getElementById('signupConditions')?.value?.trim();
+  const medications = document.getElementById('signupMedications')?.value?.trim();
+  const pregnancy = document.getElementById('signupPregnancy')?.value;
+  const experience = document.getElementById('signupExperience')?.value;
+  const goals = Array.from(document.querySelectorAll('.signup-goal:checked')).map(cb => cb.value);
+  const emergName = document.getElementById('signupEmergName')?.value?.trim();
+  const emergPhone = document.getElementById('signupEmergPhone')?.value?.trim();
+  const waiver = document.getElementById('signupWaiver')?.checked;
+  const signature = document.getElementById('signupSignature')?.value?.trim();
+  const errorEl = document.getElementById('signupError');
+
+  // Validation
+  if (!name || !email || !phone || !password) { errorEl.textContent = 'Please fill in all required fields.'; return; }
+  if (password.length < 8) { errorEl.textContent = 'Password must be at least 8 characters.'; return; }
+  if (!emergName || !emergPhone) { errorEl.textContent = 'Emergency contact is required.'; return; }
+  if (!waiver) { errorEl.textContent = 'You must agree to the liability waiver.'; return; }
+  if (!signature) { errorEl.textContent = 'Please type your name as an e-signature.'; return; }
+  if (state.users.find(u => u.email === email)) { errorEl.textContent = 'An account with this email already exists.'; return; }
+
+  // PAR-Q+ collection
+  const parqQuestions = [
+    {id:'parq1', q:'Heart condition or high blood pressure diagnosed by doctor'},
+    {id:'parq2', q:'Chest pain at rest or during activity'},
+    {id:'parq3', q:'Loss of balance due to dizziness or loss of consciousness in past 12 months'},
+    {id:'parq4', q:'Diagnosed with a chronic medical condition'},
+    {id:'parq5', q:'Currently taking prescribed medications for a chronic medical condition'},
+    {id:'parq6', q:'Bone, joint, or soft tissue problem that could be worsened by activity'},
+    {id:'parq7', q:'Doctor recommended medically supervised physical activity only'},
+  ];
+  const parqAnswers = {};
+  const parqFlags = [];
+  parqQuestions.forEach(pq => {
+    const val = document.querySelector(`input[name="${pq.id}"]:checked`)?.value || 'not answered';
+    parqAnswers[pq.id] = val;
+    if (val === 'yes') parqFlags.push(pq.q);
+  });
+  const parqFlagged = parqFlags.length > 0;
+
+  // TODO: Replace with Supabase auth — supabase.auth.signUp({ email, password })
+  // TODO: Insert user profile and health history into Supabase
+  // TODO: If parqFlagged, send email notification to studio owner via server-side function
+  const newUser = {
+    id: 'usr_' + Date.now(),
+    name, email, phone, password,
+    healthHistory: { injuries, conditions, medications, pregnancy, experience, goals, emergencyName: emergName, emergencyPhone: emergPhone, waiverSigned: true, signatureName: signature },
+    parq: { answers: parqAnswers, flagged: parqFlagged, flags: parqFlags },
+    packages: [],
+    isIntroUsed: false,
+    createdAt: new Date().toISOString(),
+  };
+  state.users.push(newUser);
+  state.currentUser = newUser;
+
+  if (parqFlagged) {
+    // TODO: Send email to studio owner — e.g. via Supabase Edge Function or EmailJS
+    // Email subject: "⚠️ PAR-Q+ Flag: New client requires follow-up — " + name
+    // Email body: name, email, phone, flagged questions list
+    console.warn('PAR-Q+ FLAGGED for', name, '—', parqFlags);
+    showToast('Account created! We\'ll be in touch before your first class.');
+    // Show message to client
+    setTimeout(() => {
+      errorEl.style.color = 'var(--teal)';
+      errorEl.textContent = '⚠️ Based on your health responses, a team member will contact you before your first class to make sure we can best support you.';
+    }, 500);
+  } else {
+    showToast('Account created! Welcome, ' + name.split(' ')[0] + '!');
+  }
+  renderAccount();
+}
+
+function logout() {
+  // TODO: Replace with Supabase auth — supabase.auth.signOut()
+  state.currentUser = null;
+  showToast('You have been logged out.');
+  renderAccount();
+}
+
+// =======================================================================
+// BOOKING FLOW
+// =======================================================================
+function startBooking(classId) {
+  const cls = state.classes.find(c => c.id === classId);
+  if (!cls) return;
+
+  if (!state.currentUser) {
+    showToast('Please log in or sign up to book a class.');
+    navigate('account');
+    // Scroll to top smoothly
+    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 200);
+    return;
+  }
+
+  // Navigate to booking page
+  navigate('booking');
+  renderBookingFlow(cls);
+}
+
+function renderBookingFlow(cls) {
+  const container = document.getElementById('bookingContent');
+  const user = state.currentUser;
+  const classDate = new Date(cls.date);
+  const dateStr = classDate.toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const timeStr = classDate.toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit', hour12: true });
+
+  // Determine credit type needed
+  const creditType = cls.type.includes('private') ? cls.type : (cls.type === 'mat' ? 'mat' : 'reformer');
+
+  // Check if user has valid credits
+  const validPackage = user.packages.find(pkg => {
+    if (new Date(pkg.expiresAt) < new Date()) return false;
+    if (pkg.type !== creditType) return false;
+    if (pkg.isUnlimited) return true;
+    return pkg.creditsRemaining > 0;
+  });
+
+  // Check intro offer eligibility
+  const introEligible = !user.isIntroUsed;
+
+  let actionHtml = '';
+  if (validPackage) {
+    actionHtml = `
+      <div class="card" style="border:2px solid var(--green);margin-top:16px">
+        <p style="font-weight:600;color:var(--green-dark)">You have a valid package: ${validPackage.name}</p>
+        <p class="text-muted">${validPackage.isUnlimited ? 'Unlimited credits' : validPackage.creditsRemaining + ' credits remaining'}</p>
+        <button class="btn btn-primary btn-full mt-2" onclick="confirmBooking('${cls.id}','${validPackage.id}')">Confirm Booking</button>
+      </div>`;
+  } else {
+    // Show package purchase options
+    const purchaseOptions = getPackageOptions(creditType);
+    actionHtml = `
+      <div class="card mt-2" style="border:2px solid var(--gold)">
+        <p style="font-weight:600;color:#b8860b">You don't have valid credits for this class type.</p>
+        <p class="text-muted mb-2">Purchase a package to book:</p>
+        ${introEligible ? `
+          <div class="price-card mb-2" style="border-color:var(--gold);cursor:pointer" onclick="purchasePackage('intro','${cls.id}')">
+            <div><div class="name">Intro Offer (First Class)</div><div class="detail">New clients only</div></div>
+            <div class="price" style="color:var(--gold)">$20</div>
+          </div>` : ''}
+        ${purchaseOptions.map(opt => `
+          <div class="price-card" style="cursor:pointer" onclick="purchasePackage('${opt.key}','${cls.id}')">
+            <div><div class="name">${opt.name}</div><div class="detail">${opt.detail}</div></div>
+            <div class="price">$${opt.price}</div>
+          </div>`).join('')}
+      </div>`;
+  }
+
+  container.innerHTML = `
+    <button class="btn btn-secondary btn-sm mb-3" onclick="navigate('schedule')">← Back to Schedule</button>
+    <h2>Book a Class</h2>
+    <div class="card mt-2">
+      <h3>${cls.label}</h3>
+      <div class="class-meta mt-1" style="display:flex;flex-wrap:wrap;gap:12px;font-size:.9rem;color:var(--gray-dark)">
+        <span>📅 ${dateStr}</span>
+        <span>🕐 ${timeStr}</span>
+        <span>⏱ ${cls.duration} min</span>
+        <span>👤 ${cls.instructor}</span>
+      </div>
+      <div class="mt-1"><span class="spots ${cls.maxCapacity - cls.bookedCount <= 2 ? 'low' : 'ok'}">${cls.maxCapacity - cls.bookedCount} spot${cls.maxCapacity - cls.bookedCount !== 1 ? 's' : ''} remaining</span></div>
+    </div>
+    ${actionHtml}
+  `;
+}
+
+function getPackageOptions(creditType) {
+  const options = {
+    mat: [
+      { key: 'mat-dropin', name: 'Mat Drop-in', detail: 'Single class', price: 28 },
+      { key: 'mat-5', name: 'Mat 5-Class Pack', detail: '3-month expiry', price: 125 },
+      { key: 'mat-10', name: 'Mat 10-Class Pack', detail: '6-month expiry', price: 230 },
+      { key: 'mat-unlimited', name: 'Mat Monthly Unlimited', detail: '1 calendar month', price: 140 },
+    ],
+    reformer: [
+      { key: 'reformer-dropin', name: 'Reformer Drop-in', detail: 'Single class', price: 38 },
+      { key: 'reformer-5', name: 'Reformer 5-Class Pack', detail: '3-month expiry', price: 175 },
+      { key: 'reformer-10', name: 'Reformer 10-Class Pack', detail: '6-month expiry', price: 330 },
+      { key: 'reformer-unlimited', name: 'Reformer Monthly Unlimited', detail: '1 calendar month', price: 195 },
+    ],
+    'private-mat': [
+      { key: 'private-mat-single', name: 'Private Mat Single', detail: 'One session', price: 85 },
+      { key: 'private-mat-5', name: 'Private Mat 5-Pack', detail: '6-month expiry', price: 390 },
+    ],
+    'private-reformer': [
+      { key: 'private-reformer-single', name: 'Private Reformer Single', detail: 'One session', price: 110 },
+      { key: 'private-reformer-5', name: 'Private Reformer 5-Pack', detail: '6-month expiry', price: 500 },
+    ],
+  };
+  return options[creditType] || [];
+}
+
+function purchasePackage(packageKey, classId) {
+  // TODO: Integrate Stripe checkout
+  // const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+  // Create checkout session via Supabase Edge Function, then redirect:
+  // stripe.redirectToCheckout({ sessionId })
+  // On success return, complete booking
+
+  // Mock: simulate purchase
+  const user = state.currentUser;
+  const cls = state.classes.find(c => c.id === classId);
+  if (!user || !cls) return;
+
+  const creditType = cls.type.includes('private') ? cls.type : (cls.type === 'mat' ? 'mat' : 'reformer');
+  let newPkg;
+
+  if (packageKey === 'intro') {
+    user.isIntroUsed = true;
+    newPkg = { id: 'pkg_' + Date.now(), type: creditType, name: 'Intro Class', creditsTotal: 1, creditsRemaining: 1, expiresAt: new Date(Date.now() + 30 * 86400000).toISOString(), isUnlimited: false };
+    state.payments.push({ id: 'pay_' + Date.now(), userId: user.id, userName: user.name, amount: 20, description: 'Intro Offer', method: 'Stripe', date: new Date().toISOString(), stripeId: 'pi_mock_' + Date.now() });
+  } else {
+    const configs = {
+      'mat-dropin': { name: 'Mat Drop-in', credits: 1, months: 1, price: 28, unlimited: false },
+      'mat-5': { name: 'Mat 5-Class Pack', credits: 5, months: 3, price: 125, unlimited: false },
+      'mat-10': { name: 'Mat 10-Class Pack', credits: 10, months: 6, price: 230, unlimited: false },
+      'mat-unlimited': { name: 'Mat Monthly Unlimited', credits: null, months: 1, price: 140, unlimited: true },
+      'reformer-dropin': { name: 'Reformer Drop-in', credits: 1, months: 1, price: 38, unlimited: false },
+      'reformer-5': { name: 'Reformer 5-Class Pack', credits: 5, months: 3, price: 175, unlimited: false },
+      'reformer-10': { name: 'Reformer 10-Class Pack', credits: 10, months: 6, price: 330, unlimited: false },
+      'reformer-unlimited': { name: 'Reformer Monthly Unlimited', credits: null, months: 1, price: 195, unlimited: true },
+      'private-mat-single': { name: 'Private Mat Single', credits: 1, months: 3, price: 85, unlimited: false },
+      'private-mat-5': { name: 'Private Mat 5-Pack', credits: 5, months: 6, price: 390, unlimited: false },
+      'private-reformer-single': { name: 'Private Reformer Single', credits: 1, months: 3, price: 110, unlimited: false },
+      'private-reformer-5': { name: 'Private Reformer 5-Pack', credits: 5, months: 6, price: 500, unlimited: false },
+    };
+    const cfg = configs[packageKey];
+    if (!cfg) return;
+    newPkg = { id: 'pkg_' + Date.now(), type: creditType, name: cfg.name, creditsTotal: cfg.credits, creditsRemaining: cfg.credits, expiresAt: new Date(Date.now() + cfg.months * 30 * 86400000).toISOString(), isUnlimited: cfg.unlimited };
+    state.payments.push({ id: 'pay_' + Date.now(), userId: user.id, userName: user.name, amount: cfg.price, description: cfg.name, method: 'Stripe', date: new Date().toISOString(), stripeId: 'pi_mock_' + Date.now() });
+  }
+
+  user.packages.push(newPkg);
+  showToast('Package purchased! Completing your booking...');
+
+  // Auto-confirm the booking now
+  setTimeout(() => confirmBooking(classId, newPkg.id), 500);
+}
+
+function confirmBooking(classId, packageId) {
+  const user = state.currentUser;
+  const cls = state.classes.find(c => c.id === classId);
+  const pkg = user.packages.find(p => p.id === packageId);
+  if (!user || !cls || !pkg) return;
+
+  // Deduct credit
+  if (!pkg.isUnlimited) {
+    pkg.creditsRemaining -= 1;
+  }
+
+  // Increment booked count
+  cls.bookedCount += 1;
+
+  // Create booking
+  const creditType = cls.type.includes('private') ? cls.type : (cls.type === 'mat' ? 'mat' : 'reformer');
+  const booking = {
+    id: 'bk_' + Date.now(),
+    userId: user.id,
+    classId: cls.id,
+    bookedAt: new Date().toISOString(),
+    status: 'confirmed',
+    creditType: creditType,
+    packageId: packageId,
+  };
+  state.bookings.push(booking);
+
+  // TODO: Insert booking into Supabase
+  // TODO: Send confirmation email via Supabase Edge Function or webhook
+
+  // Show confirmation
+  const classDate = new Date(cls.date);
+  const dateStr = classDate.toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' });
+  const timeStr = classDate.toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit', hour12: true });
+
+  const container = document.getElementById('bookingContent');
+  container.innerHTML = `
+    <div class="text-center" style="padding:40px 0">
+      <div style="font-size:4rem;margin-bottom:16px">✅</div>
+      <h2>Booking Confirmed!</h2>
+      <p class="text-muted mt-1">You're booked into <strong>${cls.label}</strong></p>
+      <div class="card mt-3" style="max-width:400px;margin:0 auto;text-align:left">
+        <p><strong>Class:</strong> ${cls.label}</p>
+        <p><strong>Date:</strong> ${dateStr}</p>
+        <p><strong>Time:</strong> ${timeStr}</p>
+        <p><strong>Instructor:</strong> ${cls.instructor}</p>
+        <p><strong>Duration:</strong> ${cls.duration} minutes</p>
+      </div>
+      <p class="text-muted mt-2">A confirmation email has been sent to ${user.email}.</p>
+      <div class="mt-3" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="navigate('schedule')">Book Another Class</button>
+        <button class="btn btn-secondary" onclick="navigate('account')">View My Bookings</button>
+      </div>
+    </div>`;
+}
+
+function cancelBooking(bookingId) {
+  const booking = state.bookings.find(b => b.id === bookingId);
+  if (!booking) return;
+
+  const cls = state.classes.find(c => c.id === booking.classId);
+  if (!cls) return;
+
+  const hoursUntil = (new Date(cls.date) - new Date()) / 3600000;
+  const canRefundCredit = hoursUntil > 24;
+
+  showModal(`
+    <h2>Cancel Booking</h2>
+    <p class="mt-2">Are you sure you want to cancel your booking for <strong>${cls.label}</strong>?</p>
+    ${!canRefundCredit ? '<p class="mt-1" style="color:var(--danger);font-weight:600">Cancellation window closed — your credit will NOT be returned (less than 24 hours before class).</p>' : '<p class="mt-1 text-muted">Your credit will be returned to your package.</p>'}
+    <div class="mt-3" style="display:flex;gap:12px">
+      <button class="btn btn-danger" onclick="executeCancelBooking('${bookingId}',${canRefundCredit})">Yes, Cancel</button>
+      <button class="btn btn-secondary" onclick="closeModal()">Keep Booking</button>
+    </div>
+  `);
+}
+
+function executeCancelBooking(bookingId, refundCredit) {
+  const booking = state.bookings.find(b => b.id === bookingId);
+  if (!booking) return;
+
+  const cls = state.classes.find(c => c.id === booking.classId);
+  booking.status = 'cancelled';
+
+  if (cls) cls.bookedCount = Math.max(0, cls.bookedCount - 1);
+
+  // Refund credit if within 24hr window
+  if (refundCredit && booking.packageId) {
+    const user = state.currentUser || state.users.find(u => u.id === booking.userId);
+    if (user) {
+      const pkg = user.packages.find(p => p.id === booking.packageId);
+      if (pkg && !pkg.isUnlimited) {
+        pkg.creditsRemaining += 1;
+      }
+    }
+  }
+
+  // TODO: Update booking status in Supabase
+  // TODO: Send cancellation email
+
+  closeModal();
+  showToast(refundCredit ? 'Booking cancelled. Credit has been returned.' : 'Booking cancelled. Credit was not returned (late cancellation).');
+  renderAccount();
+}
+
+// =======================================================================
+// ADMIN
+// =======================================================================
+function attemptAdminLogin() {
+  const pw = document.getElementById('adminPassword').value;
+  const errorEl = document.getElementById('adminLoginError');
+
+  if (pw === ADMIN_PASSWORD) {
+    state.isAdmin = true;
+    enterAdmin();
+  } else {
+    errorEl.classList.remove('hidden');
+  }
+}
+
+function enterAdmin() {
+  document.getElementById('clientNav').classList.add('hidden');
+  document.getElementById('clientMain').classList.add('hidden');
+  document.getElementById('adminLayout').classList.remove('hidden');
+  switchAdminTab('admin-schedule');
+}
+
+function exitAdmin() {
+  state.isAdmin = false;
+  document.getElementById('adminLayout').classList.add('hidden');
+  document.getElementById('clientNav').classList.remove('hidden');
+  document.getElementById('clientMain').classList.remove('hidden');
+  navigate('home');
+}
+
+function switchAdminTab(tab) {
+  state.adminTab = tab;
+  document.querySelectorAll('.admin-nav-link').forEach(l => l.classList.remove('active'));
+  document.querySelectorAll(`.admin-nav-link[data-admin="${tab}"]`).forEach(l => l.classList.add('active'));
+
+  const content = document.getElementById('adminContent');
+  switch (tab) {
+    case 'admin-schedule': renderAdminSchedule(content); break;
+    case 'admin-clients': renderAdminClients(content); break;
+    case 'admin-bookings': renderAdminBookings(content); break;
+    case 'admin-packages': renderAdminPackages(content); break;
+    case 'admin-payments': renderAdminPayments(content); break;
+    case 'admin-reports': renderAdminReports(content); break;
+  }
+}
+
+function renderAdminSchedule(container) {
+  const now = new Date();
+  const upcoming = state.classes.filter(c => new Date(c.date) > now).slice(0, 50);
+
+  // Stats
+  const todayStr = now.toDateString();
+  const todayClasses = state.classes.filter(c => new Date(c.date).toDateString() === todayStr);
+  const totalBookings = state.bookings.filter(b => b.status === 'confirmed').length;
+
+  container.innerHTML = `
+    <div class="flex justify-between items-center flex-wrap gap-2 mb-3">
+      <h2 style="margin:0">Schedule</h2>
+      <button class="btn btn-primary btn-sm" onclick="showAddClassModal()">+ Add Class</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:24px">
+      <div class="stat-card"><div class="number">${todayClasses.length}</div><div class="label">Classes Today</div></div>
+      <div class="stat-card"><div class="number">${upcoming.length}</div><div class="label">Upcoming</div></div>
+      <div class="stat-card"><div class="number">${totalBookings}</div><div class="label">Active Bookings</div></div>
+      <div class="stat-card"><div class="number">${state.users.length}</div><div class="label">Total Clients</div></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Date/Time</th><th>Class</th><th>Instructor</th><th>Booked</th><th>Actions</th></tr></thead>
+        <tbody>
+          ${upcoming.map(cls => {
+            const d = new Date(cls.date);
+            const dateStr = d.toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
+            const timeStr = d.toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit', hour12: true });
+            return `<tr>
+              <td>${dateStr}<br><span class="text-muted">${timeStr}</span></td>
+              <td><span class="badge badge-teal">${cls.label}</span></td>
+              <td>${cls.instructor}</td>
+              <td>${cls.bookedCount}/${cls.maxCapacity}</td>
+              <td>
+                <button class="btn btn-secondary btn-sm" onclick="showClassAttendees('${cls.id}')" style="margin-right:4px">View</button>
+                <button class="btn btn-secondary btn-sm" onclick="showEditClassModal('${cls.id}')" style="margin-right:4px">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteClass('${cls.id}')">Delete</button>
+              </td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function showAddClassModal() {
+  showModal(`
+    <h2>Add New Class</h2>
+    <div class="form-group">
+      <label>Class Type</label>
+      <select id="newClassType">
+        <option value="mat">Mat Pilates</option>
+        <option value="reformer">Reformer Pilates</option>
+        <option value="private-mat">Private Mat</option>
+        <option value="private-reformer">Private Reformer</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Date</label><input type="date" id="newClassDate"></div>
+      <div class="form-group"><label>Time</label><input type="time" id="newClassTime"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Duration (min)</label><input type="number" id="newClassDuration" value="55"></div>
+      <div class="form-group"><label>Max Capacity</label><input type="number" id="newClassCapacity" value="10"></div>
+    </div>
+    <div class="form-group">
+      <label>Instructor</label>
+      <input type="text" id="newClassInstructor" placeholder="Instructor name">
+    </div>
+    <button class="btn btn-primary btn-full mt-2" onclick="addNewClass()">Add Class</button>
+  `);
+}
+
+function addNewClass() {
+  const type = document.getElementById('newClassType').value;
+  const date = document.getElementById('newClassDate').value;
+  const time = document.getElementById('newClassTime').value;
+  const duration = parseInt(document.getElementById('newClassDuration').value) || 55;
+  const capacity = parseInt(document.getElementById('newClassCapacity').value) || 10;
+  const instructor = document.getElementById('newClassInstructor').value.trim();
+
+  if (!date || !time || !instructor) { showToast('Please fill in all fields.'); return; }
+
+  const labels = { mat: 'Mat Pilates', reformer: 'Reformer Pilates', 'private-mat': 'Private Mat', 'private-reformer': 'Private Reformer' };
+
+  // TODO: Insert into Supabase — supabase.from('classes').insert({...})
+  state.classes.push({
+    id: 'cls_' + Date.now(),
+    type, label: labels[type],
+    date: new Date(date + 'T' + time).toISOString(),
+    duration, maxCapacity: capacity,
+    bookedCount: 0, instructor,
+  });
+
+  closeModal();
+  showToast('Class added successfully.');
+  switchAdminTab('admin-schedule');
+}
+
+function showEditClassModal(classId) {
+  const cls = state.classes.find(c => c.id === classId);
+  if (!cls) return;
+  const d = new Date(cls.date);
+  const dateVal = d.toISOString().split('T')[0];
+  const timeVal = d.toTimeString().slice(0, 5);
+
+  showModal(`
+    <h2>Edit Class</h2>
+    <div class="form-group">
+      <label>Class Type</label>
+      <select id="editClassType">
+        <option value="mat" ${cls.type === 'mat' ? 'selected' : ''}>Mat Pilates</option>
+        <option value="reformer" ${cls.type === 'reformer' ? 'selected' : ''}>Reformer Pilates</option>
+        <option value="private-mat" ${cls.type === 'private-mat' ? 'selected' : ''}>Private Mat</option>
+        <option value="private-reformer" ${cls.type === 'private-reformer' ? 'selected' : ''}>Private Reformer</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Date</label><input type="date" id="editClassDate" value="${dateVal}"></div>
+      <div class="form-group"><label>Time</label><input type="time" id="editClassTime" value="${timeVal}"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Duration (min)</label><input type="number" id="editClassDuration" value="${cls.duration}"></div>
+      <div class="form-group"><label>Max Capacity</label><input type="number" id="editClassCapacity" value="${cls.maxCapacity}"></div>
+    </div>
+    <div class="form-group">
+      <label>Instructor</label>
+      <input type="text" id="editClassInstructor" value="${cls.instructor}">
+    </div>
+    <button class="btn btn-primary btn-full mt-2" onclick="saveEditClass('${classId}')">Save Changes</button>
+  `);
+}
+
+function saveEditClass(classId) {
+  const cls = state.classes.find(c => c.id === classId);
+  if (!cls) return;
+  const labels = { mat: 'Mat Pilates', reformer: 'Reformer Pilates', 'private-mat': 'Private Mat', 'private-reformer': 'Private Reformer' };
+  cls.type = document.getElementById('editClassType').value;
+  cls.label = labels[cls.type];
+  cls.date = new Date(document.getElementById('editClassDate').value + 'T' + document.getElementById('editClassTime').value).toISOString();
+  cls.duration = parseInt(document.getElementById('editClassDuration').value) || 55;
+  cls.maxCapacity = parseInt(document.getElementById('editClassCapacity').value) || 10;
+  cls.instructor = document.getElementById('editClassInstructor').value.trim();
+  // TODO: Update in Supabase — supabase.from('classes').update({...}).eq('id', classId)
+  closeModal();
+  showToast('Class updated.');
+  switchAdminTab('admin-schedule');
+}
+
+function deleteClass(classId) {
+  showModal(`
+    <h2>Delete Class</h2>
+    <p class="mt-2">Are you sure you want to delete this class? This will also cancel any bookings.</p>
+    <div class="mt-3" style="display:flex;gap:12px">
+      <button class="btn btn-danger" onclick="executeDeleteClass('${classId}')">Yes, Delete</button>
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+    </div>
+  `);
+}
+
+function executeDeleteClass(classId) {
+  state.classes = state.classes.filter(c => c.id !== classId);
+  state.bookings = state.bookings.filter(b => b.classId !== classId);
+  // TODO: Delete from Supabase
+  closeModal();
+  showToast('Class deleted.');
+  switchAdminTab('admin-schedule');
+}
+
+function showClassAttendees(classId) {
+  const cls = state.classes.find(c => c.id === classId);
+  if (!cls) return;
+  const classBookings = state.bookings.filter(b => b.classId === classId && b.status === 'confirmed');
+  const attendees = classBookings.map(b => {
+    const user = state.users.find(u => u.id === b.userId);
+    return user ? user.name : 'Unknown';
+  });
+
+  showModal(`
+    <h2>${cls.label} — Attendees</h2>
+    <p class="text-muted">${new Date(cls.date).toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' })} at ${new Date(cls.date).toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit', hour12: true })}</p>
+    <p class="mt-1">${cls.bookedCount}/${cls.maxCapacity} booked</p>
+    <div class="mt-2">
+      ${attendees.length === 0 ? '<p class="text-muted">No bookings yet.</p>' : attendees.map(a => `<div style="padding:8px 0;border-bottom:1px solid #eee">👤 ${a}</div>`).join('')}
+    </div>
+    <button class="btn btn-secondary btn-full mt-3" onclick="closeModal()">Close</button>
+  `);
+}
+
+function renderAdminClients(container) {
+  // TODO: Fetch from Supabase — supabase.from('users').select('*')
+  container.innerHTML = `
+    <h2>Clients</h2>
+    <div class="form-group" style="max-width:300px">
+      <input type="text" placeholder="Search clients..." oninput="filterAdminClients(this.value)">
+    </div>
+    <div class="table-wrap" id="adminClientTable">
+      ${renderClientTable(state.users)}
+    </div>`;
+}
+
+function renderClientTable(users) {
+  return `<table>
+    <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Packages</th><th>Actions</th></tr></thead>
+    <tbody>
+      ${users.map(u => `<tr ${u.parq && u.parq.flagged ? 'style="background:#fff8f0"' : ''}>
+        <td style="font-weight:600">${u.parq && u.parq.flagged ? '🚩 ' : ''}${u.name}</td>
+        <td>${u.email}</td>
+        <td>${u.phone}</td>
+        <td>${u.packages.length} active</td>
+        <td><button class="btn btn-secondary btn-sm" onclick="showClientProfile('${u.id}')">View</button></td>
+      </tr>`).join('')}
+    </tbody>
+  </table>`;
+}
+
+function filterAdminClients(query) {
+  const q = query.toLowerCase();
+  const filtered = state.users.filter(u => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q));
+  document.getElementById('adminClientTable').innerHTML = renderClientTable(filtered);
+}
+
+function showClientProfile(userId) {
+  const user = state.users.find(u => u.id === userId);
+  if (!user) return;
+  const hh = user.healthHistory || {};
+  const userBookings = state.bookings.filter(b => b.userId === userId);
+
+  let pkgHtml = user.packages.length === 0 ? '<p class="text-muted">No packages</p>' : user.packages.map(p => {
+    const exp = new Date(p.expiresAt).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+    return `<div style="padding:8px 0;border-bottom:1px solid #eee"><strong>${p.name}</strong> — ${p.isUnlimited ? 'Unlimited' : p.creditsRemaining + ' credits left'} — Exp: ${exp}</div>`;
+  }).join('');
+
+  let bookingHtml = userBookings.length === 0 ? '<p class="text-muted">No bookings</p>' : userBookings.map(b => {
+    const cls = state.classes.find(c => c.id === b.classId);
+    if (!cls) return '';
+    const d = new Date(cls.date).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
+    return `<div style="padding:8px 0;border-bottom:1px solid #eee">${cls.label} — ${d} <span class="badge ${b.status === 'confirmed' ? 'badge-teal' : 'badge-gray'}">${b.status}</span></div>`;
+  }).join('');
+
+  showModal(`
+    <h2>${user.name}</h2>
+    <p class="text-muted">${user.email} | ${user.phone}</p>
+
+    ${user.parq && user.parq.flagged ? `
+    <div style="background:#fff0f0;border:1.5px solid #e07b6a;border-radius:8px;padding:14px;margin:12px 0;">
+      <p style="font-weight:700;color:#c0392b;margin-bottom:6px;">🚩 PAR-Q+ Flagged — Follow-up required</p>
+      <p style="font-size:.85rem;color:#555;margin-bottom:6px;">This client answered YES to the following:</p>
+      <ul style="font-size:.85rem;color:#333;padding-left:18px;margin:0">${(user.parq.flags || []).map(f => `<li>${f}</li>`).join('')}</ul>
+    </div>` : `<div style="background:#f0fff4;border:1px solid var(--teal);border-radius:8px;padding:10px 14px;margin:12px 0;font-size:.85rem;color:var(--teal);font-weight:600;">✅ PAR-Q+ Cleared</div>`}
+
+    <h3 class="mt-3">Health History</h3>
+    <div style="font-size:.9rem" class="mt-1">
+      <p><strong>Injuries:</strong> ${hh.injuries || 'None'}</p>
+      <p><strong>Conditions:</strong> ${hh.conditions || 'None'}</p>
+      <p><strong>Medications:</strong> ${hh.medications || 'None'}</p>
+      <p><strong>Pregnancy:</strong> ${hh.pregnancy || 'N/A'}</p>
+      <p><strong>Experience:</strong> ${hh.experience || 'N/A'}</p>
+      <p><strong>Goals:</strong> ${(hh.goals || []).join(', ') || 'N/A'}</p>
+      <p><strong>Emergency:</strong> ${hh.emergencyName || 'N/A'} (${hh.emergencyPhone || 'N/A'})</p>
+    </div>
+
+    <h3 class="mt-3">Packages</h3>
+    <div class="mt-1">${pkgHtml}</div>
+    <button class="btn btn-secondary btn-sm mt-1" onclick="closeModal();showAdminAddCreditsModal('${userId}')">+ Add Credits</button>
+
+    <h3 class="mt-3">Booking History</h3>
+    <div class="mt-1">${bookingHtml}</div>
+
+    <button class="btn btn-secondary btn-full mt-3" onclick="closeModal()">Close</button>
+  `);
+}
+
+function showAdminAddCreditsModal(userId) {
+  const user = state.users.find(u => u.id === userId);
+  if (!user) return;
+
+  showModal(`
+    <h2>Add Credits — ${user.name}</h2>
+    <div class="form-group">
+      <label>Package Type</label>
+      <select id="adminCreditType">
+        <option value="mat">Mat</option>
+        <option value="reformer">Reformer</option>
+        <option value="private-mat">Private Mat</option>
+        <option value="private-reformer">Private Reformer</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Package</label>
+      <select id="adminCreditPkg">
+        <option value="dropin">Drop-in (1 credit)</option>
+        <option value="5pack">5-Class Pack</option>
+        <option value="10pack">10-Class Pack</option>
+        <option value="unlimited">Monthly Unlimited</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Expiry (months from now)</label>
+      <input type="number" id="adminCreditMonths" value="3">
+    </div>
+    <button class="btn btn-primary btn-full mt-2" onclick="adminAddCredits('${userId}')">Add Package</button>
+  `);
+}
+
+function adminAddCredits(userId) {
+  const user = state.users.find(u => u.id === userId);
+  if (!user) return;
+
+  const type = document.getElementById('adminCreditType').value;
+  const pkgKey = document.getElementById('adminCreditPkg').value;
+  const months = parseInt(document.getElementById('adminCreditMonths').value) || 3;
+
+  const configs = {
+    dropin: { name: ' Drop-in', credits: 1, unlimited: false },
+    '5pack': { name: ' 5-Class Pack', credits: 5, unlimited: false },
+    '10pack': { name: ' 10-Class Pack', credits: 10, unlimited: false },
+    unlimited: { name: ' Monthly Unlimited', credits: null, unlimited: true },
+  };
+  const labels = { mat: 'Mat', reformer: 'Reformer', 'private-mat': 'Private Mat', 'private-reformer': 'Private Reformer' };
+  const cfg = configs[pkgKey];
+
+  const newPkg = {
+    id: 'pkg_' + Date.now(),
+    type, name: labels[type] + cfg.name,
+    creditsTotal: cfg.credits, creditsRemaining: cfg.credits,
+    expiresAt: new Date(Date.now() + months * 30 * 86400000).toISOString(),
+    isUnlimited: cfg.unlimited,
+  };
+  user.packages.push(newPkg);
+
+  // TODO: Insert into Supabase
+  closeModal();
+  showToast('Package added for ' + user.name);
+  switchAdminTab('admin-clients');
+}
+
+function renderAdminBookings(container) {
+  const now = new Date();
+  const upcoming = state.bookings.filter(b => {
+    const cls = state.classes.find(c => c.id === b.classId);
+    return cls && new Date(cls.date) > now && b.status === 'confirmed';
+  });
+
+  container.innerHTML = `
+    <h2>Upcoming Bookings</h2>
+    ${upcoming.length === 0 ? '<div class="empty-state"><div class="icon">📋</div><p>No upcoming bookings.</p></div>' : `
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Client</th><th>Class</th><th>Date/Time</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          ${upcoming.map(b => {
+            const user = state.users.find(u => u.id === b.userId);
+            const cls = state.classes.find(c => c.id === b.classId);
+            if (!cls) return '';
+            const d = new Date(cls.date);
+            return `<tr>
+              <td>${user ? user.name : 'Unknown'}</td>
+              <td>${cls.label}</td>
+              <td>${d.toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' })}<br><span class="text-muted">${d.toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit', hour12: true })}</span></td>
+              <td><span class="badge badge-teal">${b.status}</span></td>
+              <td><button class="btn btn-danger btn-sm" onclick="adminCancelBooking('${b.id}')">Cancel</button></td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`}`;
+}
+
+function adminCancelBooking(bookingId) {
+  const booking = state.bookings.find(b => b.id === bookingId);
+  if (!booking) return;
+  const cls = state.classes.find(c => c.id === booking.classId);
+
+  showModal(`
+    <h2>Cancel Booking</h2>
+    <p class="mt-2">Cancel this booking on behalf of the client?</p>
+    <label class="mt-2" style="display:flex;align-items:center;gap:8px;font-weight:400;cursor:pointer">
+      <input type="checkbox" id="adminRefundCredit" checked> Return credit to client
+    </label>
+    <div class="mt-3" style="display:flex;gap:12px">
+      <button class="btn btn-danger" onclick="executeAdminCancel('${bookingId}')">Cancel Booking</button>
+      <button class="btn btn-secondary" onclick="closeModal()">Keep</button>
+    </div>
+  `);
+}
+
+function executeAdminCancel(bookingId) {
+  const refund = document.getElementById('adminRefundCredit')?.checked;
+  const booking = state.bookings.find(b => b.id === bookingId);
+  if (!booking) return;
+
+  booking.status = 'cancelled';
+  const cls = state.classes.find(c => c.id === booking.classId);
+  if (cls) cls.bookedCount = Math.max(0, cls.bookedCount - 1);
+
+  if (refund && booking.packageId) {
+    const user = state.users.find(u => u.id === booking.userId);
+    if (user) {
+      const pkg = user.packages.find(p => p.id === booking.packageId);
+      if (pkg && !pkg.isUnlimited) pkg.creditsRemaining += 1;
+    }
+  }
+
+  // TODO: Update in Supabase
+  closeModal();
+  showToast('Booking cancelled.');
+  switchAdminTab('admin-bookings');
+}
+
+function renderAdminPackages(container) {
+  container.innerHTML = `
+    <h2>Assign Package</h2>
+    <p class="text-muted mb-3">Manually assign a package to a client (e.g. for cash payments).</p>
+    <div class="card" style="max-width:500px">
+      <div class="form-group">
+        <label>Client</label>
+        <select id="adminPkgClient">
+          ${state.users.map(u => `<option value="${u.id}">${u.name} (${u.email})</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Class Type</label>
+        <select id="adminPkgType">
+          <option value="mat">Mat</option>
+          <option value="reformer">Reformer</option>
+          <option value="private-mat">Private Mat</option>
+          <option value="private-reformer">Private Reformer</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Package</label>
+        <select id="adminPkgPkg">
+          <option value="dropin-1">Drop-in (1 credit)</option>
+          <option value="pack-5">5-Class Pack</option>
+          <option value="pack-10">10-Class Pack</option>
+          <option value="unlimited">Monthly Unlimited</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Expiry (months from now)</label>
+        <input type="number" id="adminPkgMonths" value="3">
+      </div>
+      <button class="btn btn-primary btn-full" onclick="adminAssignPackage()">Assign Package</button>
+    </div>
+
+    <h3 class="mt-4">All Active Packages</h3>
+    <div class="table-wrap mt-2">
+      <table>
+        <thead><tr><th>Client</th><th>Package</th><th>Credits</th><th>Expires</th></tr></thead>
+        <tbody>
+          ${state.users.flatMap(u => u.packages.map(p => {
+            const exp = new Date(p.expiresAt);
+            const isExpired = exp < new Date();
+            return `<tr>
+              <td>${u.name}</td>
+              <td>${p.name}</td>
+              <td>${p.isUnlimited ? '∞' : p.creditsRemaining + '/' + p.creditsTotal}</td>
+              <td>${isExpired ? '<span style="color:var(--danger)">Expired</span>' : exp.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+            </tr>`;
+          })).join('') || '<tr><td colspan="4" class="text-muted">No packages found</td></tr>'}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function adminAssignPackage() {
+  const userId = document.getElementById('adminPkgClient').value;
+  const type = document.getElementById('adminPkgType').value;
+  const pkgKey = document.getElementById('adminPkgPkg').value;
+  const months = parseInt(document.getElementById('adminPkgMonths').value) || 3;
+  const user = state.users.find(u => u.id === userId);
+  if (!user) return;
+
+  const labels = { mat: 'Mat', reformer: 'Reformer', 'private-mat': 'Private Mat', 'private-reformer': 'Private Reformer' };
+  const configs = {
+    'dropin-1': { name: ' Drop-in', credits: 1, unlimited: false },
+    'pack-5': { name: ' 5-Class Pack', credits: 5, unlimited: false },
+    'pack-10': { name: ' 10-Class Pack', credits: 10, unlimited: false },
+    'unlimited': { name: ' Monthly Unlimited', credits: null, unlimited: true },
+  };
+  const cfg = configs[pkgKey];
+
+  user.packages.push({
+    id: 'pkg_' + Date.now(), type,
+    name: labels[type] + cfg.name,
+    creditsTotal: cfg.credits, creditsRemaining: cfg.credits,
+    expiresAt: new Date(Date.now() + months * 30 * 86400000).toISOString(),
+    isUnlimited: cfg.unlimited,
+  });
+
+  // TODO: Insert into Supabase and log payment if needed
+  showToast('Package assigned to ' + user.name);
+  switchAdminTab('admin-packages');
+}
+
+function renderAdminPayments(container) {
+  // TODO: Fetch from Supabase — supabase.from('payments').select('*').order('date', { ascending: false })
+  container.innerHTML = `
+    <h2>Payments</h2>
+    <p class="text-muted mb-3">Transaction log from Stripe and manual entries.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Date</th><th>Client</th><th>Description</th><th>Amount</th><th>Method</th><th>Stripe ID</th></tr></thead>
+        <tbody>
+          ${state.payments.sort((a, b) => new Date(b.date) - new Date(a.date)).map(p => `<tr>
+            <td>${new Date(p.date).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+            <td>${p.userName}</td>
+            <td>${p.description}</td>
+            <td style="font-weight:600">$${p.amount}</td>
+            <td><span class="badge ${p.method === 'Stripe' ? 'badge-teal' : 'badge-gray'}">${p.method}</span></td>
+            <td class="text-muted" style="font-size:.8rem">${p.stripeId || '—'}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function renderAdminReports(container) {
+  const now = new Date();
+  const thisMonth = now.getMonth();
+  const thisYear = now.getFullYear();
+
+  // --- Financial Report ---
+  const monthPayments = state.payments.filter(p => {
+    const d = new Date(p.date);
+    return d.getMonth() === thisMonth && d.getFullYear() === thisYear;
+  });
+  const monthRevenue = monthPayments.reduce((sum, p) => sum + p.amount, 0);
+  const totalRevenue = state.payments.reduce((sum, p) => sum + p.amount, 0);
+
+  // Revenue by package type
+  const revenueByType = {};
+  state.payments.forEach(p => {
+    const type = p.description || 'Other';
+    revenueByType[type] = (revenueByType[type] || 0) + p.amount;
+  });
+  const topTypes = Object.entries(revenueByType).sort((a,b) => b[1]-a[1]).slice(0,6);
+
+  // --- Class Fullness Report ---
+  const upcoming = state.classes.filter(c => new Date(c.date) > now);
+  const past = state.classes.filter(c => new Date(c.date) <= now);
+
+  function fullnessPct(cls) {
+    return cls.maxCapacity > 0 ? Math.round((cls.bookedCount / cls.maxCapacity) * 100) : 0;
+  }
+  function fullnessBar(pct) {
+    const color = pct >= 80 ? '#4caf50' : pct >= 50 ? '#f0b724' : '#e07b6a';
+    return `<div style="background:#eee;border-radius:6px;height:8px;overflow:hidden;width:100%;margin-top:4px;">
+      <div style="height:100%;background:${color};width:${pct}%;border-radius:6px;transition:width .3s;"></div>
+    </div>`;
+  }
+
+  // Avg fullness by class type
+  const typeStats = {};
+  state.classes.forEach(c => {
+    if (!typeStats[c.type]) typeStats[c.type] = { total: 0, booked: 0, count: 0 };
+    typeStats[c.type].total += c.maxCapacity;
+    typeStats[c.type].booked += c.bookedCount;
+    typeStats[c.type].count++;
+  });
+
+  // --- Client Stats ---
+  const totalClients = state.users.length;
+  const activeClients = state.users.filter(u => u.packages.some(p => p.creditsRemaining > 0 || p.isUnlimited)).length;
+  const flaggedClients = state.users.filter(u => u.parq && u.parq.flagged).length;
+  const newThisMonth = state.users.filter(u => {
+    if (!u.createdAt) return false;
+    const d = new Date(u.createdAt);
+    return d.getMonth() === thisMonth && d.getFullYear() === thisYear;
+  }).length;
+
+  // --- Upcoming capacity alerts ---
+  const fullClasses = upcoming.filter(c => c.bookedCount >= c.maxCapacity).length;
+  const nearlyFull = upcoming.filter(c => {
+    const pct = fullnessPct(c);
+    return pct >= 70 && pct < 100;
+  }).length;
+
+  container.innerHTML = `
+    <h2>📊 Reports</h2>
+    <p class="text-muted mb-3">Business overview — updated in real time from your data.</p>
+
+    <!-- Financial Summary -->
+    <h3 class="mt-3 mb-2">💰 Financial Summary</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;">
+      <div style="background:var(--card);border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">THIS MONTH</div>
+        <div style="font-size:24px;font-weight:700;color:var(--teal);">$${monthRevenue}</div>
+      </div>
+      <div style="background:var(--card);border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">ALL TIME</div>
+        <div style="font-size:24px;font-weight:700;color:var(--text);">$${totalRevenue}</div>
+      </div>
+      <div style="background:var(--card);border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">TRANSACTIONS</div>
+        <div style="font-size:24px;font-weight:700;color:var(--text);">${state.payments.length}</div>
+      </div>
+      <div style="background:var(--card);border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">AVG SALE</div>
+        <div style="font-size:24px;font-weight:700;color:var(--text);">$${state.payments.length ? Math.round(totalRevenue/state.payments.length) : 0}</div>
+      </div>
+    </div>
+
+    <div style="background:var(--card);border-radius:14px;padding:16px;margin-bottom:20px;">
+      <div style="font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:12px;">REVENUE BY PACKAGE TYPE</div>
+      ${topTypes.map(([type, amount]) => {
+        const pct = Math.round((amount / totalRevenue) * 100);
+        return `<div style="margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px;">
+            <span>${type}</span><span style="font-weight:600;">$${amount} <span style="color:var(--text-muted);font-weight:400;">(${pct}%)</span></span>
+          </div>
+          <div style="background:#eee;border-radius:6px;height:6px;overflow:hidden;">
+            <div style="height:100%;background:var(--teal);width:${pct}%;border-radius:6px;"></div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <!-- Class Fullness -->
+    <h3 class="mt-3 mb-2">📅 Class Fullness</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px;">
+      <div style="background:var(--card);border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">UPCOMING CLASSES</div>
+        <div style="font-size:24px;font-weight:700;color:var(--text);">${upcoming.length}</div>
+      </div>
+      <div style="background:#fff0f0;border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:#c0392b;letter-spacing:.5px;margin-bottom:4px;">FULL</div>
+        <div style="font-size:24px;font-weight:700;color:#c0392b;">${fullClasses}</div>
+      </div>
+      <div style="background:#fffbea;border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:#c49a10;letter-spacing:.5px;margin-bottom:4px;">NEARLY FULL</div>
+        <div style="font-size:24px;font-weight:700;color:#c49a10;">${nearlyFull}</div>
+      </div>
+      <div style="background:#f0fff4;border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:var(--teal);letter-spacing:.5px;margin-bottom:4px;">HAS SPOTS</div>
+        <div style="font-size:24px;font-weight:700;color:var(--teal);">${upcoming.length - fullClasses}</div>
+      </div>
+    </div>
+
+    <div style="background:var(--card);border-radius:14px;padding:16px;margin-bottom:20px;">
+      <div style="font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:12px;">AVG FULLNESS BY CLASS TYPE</div>
+      ${Object.entries(typeStats).map(([type, s]) => {
+        const pct = s.total > 0 ? Math.round((s.booked/s.total)*100) : 0;
+        const label = type.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+        return `<div style="margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px;">
+            <span>${label}</span><span style="font-weight:600;">${pct}% full <span style="color:var(--text-muted);font-weight:400;">(${s.count} classes)</span></span>
+          </div>
+          ${fullnessBar(pct)}
+        </div>`;
+      }).join('')}
+    </div>
+
+    <!-- Client Stats -->
+    <h3 class="mt-3 mb-2">👥 Client Stats</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;">
+      <div style="background:var(--card);border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">TOTAL CLIENTS</div>
+        <div style="font-size:24px;font-weight:700;color:var(--text);">${totalClients}</div>
+      </div>
+      <div style="background:var(--card);border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">ACTIVE (HAVE CREDITS)</div>
+        <div style="font-size:24px;font-weight:700;color:var(--teal);">${activeClients}</div>
+      </div>
+      <div style="background:var(--card);border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">NEW THIS MONTH</div>
+        <div style="font-size:24px;font-weight:700;color:var(--green);">${newThisMonth}</div>
+      </div>
+      <div style="background:${flaggedClients > 0 ? '#fff0f0' : 'var(--card)'};border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:${flaggedClients > 0 ? '#c0392b' : 'var(--text-muted)'};letter-spacing:.5px;margin-bottom:4px;">🚩 PAR-Q FLAGGED</div>
+        <div style="font-size:24px;font-weight:700;color:${flaggedClients > 0 ? '#c0392b' : 'var(--text)'};">${flaggedClients}</div>
+      </div>
+    </div>
+
+    <!-- Booking Stats -->
+    <h3 class="mt-3 mb-2">🎯 Booking Stats</h3>
+    <div style="background:var(--card);border-radius:14px;padding:16px;margin-bottom:40px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;">
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">TOTAL BOOKINGS</div>
+          <div style="font-size:22px;font-weight:700;">${state.bookings.length}</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">CONFIRMED</div>
+          <div style="font-size:22px;font-weight:700;color:var(--teal);">${state.bookings.filter(b=>b.status==='confirmed').length}</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">CANCELLED</div>
+          <div style="font-size:22px;font-weight:700;color:#e07b6a;">${state.bookings.filter(b=>b.status==='cancelled').length}</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:4px;">CANCEL RATE</div>
+          <div style="font-size:22px;font-weight:700;">${state.bookings.length ? Math.round((state.bookings.filter(b=>b.status==='cancelled').length/state.bookings.length)*100) : 0}%</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// =======================================================================
+// MODAL & TOAST UTILITIES
+// =======================================================================
+function showModal(html) {
+  document.getElementById('modalContainer').innerHTML = `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal" style="position:relative">${html}</div>
+    </div>`;
+}
+
+function closeModal() {
+  document.getElementById('modalContainer').innerHTML = '';
+}
+
+function showToast(message) {
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = message;
+  document.getElementById('toastContainer').appendChild(toast);
+  setTimeout(() => toast.remove(), 3500);
+}
+
+// =======================================================================
+// SIGNATURE PREVIEW
+// =======================================================================
+document.addEventListener('input', e => {
+  if (e.target.id === 'signupSignature') {
+    const preview = document.getElementById('signaturePreview');
+    if (preview) preview.textContent = e.target.value || 'Your signature will appear here';
+  }
+});
+
+// =======================================================================
+// CONTACT FORM
+// =======================================================================
+// TODO: Sign up free at emailjs.com, create a service + template, replace IDs below
+const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID';
+const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
+const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY';
+
+function submitContactForm() {
+  const name = document.getElementById('contactName')?.value?.trim();
+  const email = document.getElementById('contactEmail')?.value?.trim();
+  const interest = document.getElementById('contactInterest')?.value;
+  const message = document.getElementById('contactMessage')?.value?.trim();
+  const statusEl = document.getElementById('contactStatus');
+  if (!name || !email || !message) {
+    statusEl.style.color = '#e07b6a';
+    statusEl.textContent = 'Please fill in your name, email, and message.';
+    return;
+  }
+  statusEl.style.color = 'var(--gray-dark)';
+  statusEl.textContent = 'Sending...';
+  // TODO: Replace simulation below with real EmailJS call once configured:
+  // emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+  //   from_name: name, from_email: email,
+  //   interest: interest || 'Not specified', message,
+  //   to_email: 'Steph@thrivebodytherapy.com'
+  // }, EMAILJS_PUBLIC_KEY).then(() => { ... }).catch(() => { ... });
+  setTimeout(() => {
+    statusEl.style.color = 'var(--teal)';
+    statusEl.textContent = "✅ Message sent! We'll be in touch soon.";
+    ['contactName','contactEmail','contactInterest','contactMessage'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.value = '';
+    });
+  }, 900);
+}
+
+// =======================================================================
+// INIT
+// =======================================================================
+generateMockData();
+
+// Check URL hash for admin route
+if (window.location.hash === '#admin' || window.location.pathname.includes('admin')) {
+  navigate('admin-login');
+}
+</script>
+</body>
+</html>
