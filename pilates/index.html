@@ -948,10 +948,10 @@ function renderSignupForm() {
 
       <div class="form-group">
         <label>Goals (select all that apply)</label>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">
           ${['Core strength','Flexibility','Injury rehab','Postnatal recovery','General fitness','Weight loss'].map(g => `
-            <label style="display:flex;align-items:center;gap:4px;font-weight:400;font-size:.9rem;cursor:pointer">
-              <input type="checkbox" class="signup-goal" value="${g}"> ${g}
+            <label style="display:flex;align-items:center;gap:10px;font-weight:400;font-size:.95rem;cursor:pointer;padding:10px 12px;background:var(--bg);border-radius:10px;border:1px solid #e8e8e8;">
+              <input type="checkbox" class="signup-goal" value="${g}" style="width:18px;height:18px;flex-shrink:0;accent-color:var(--teal);cursor:pointer;"> ${g}
             </label>`).join('')}
         </div>
       </div>
