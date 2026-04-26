@@ -713,11 +713,7 @@ function renderCalendar() {
   if (labelEl) labelEl.textContent = `${months[month]} ${year}`;
 
   // Figure out which week is currently shown
-  const now = new Date();
-  now.setHours(0,0,0,0);
-  const shownWeekStart = new Date(now);
-  shownWeekStart.setDate(shownWeekStart.getDate() + (state.scheduleWeekOffset || 0) * 7);
-  shownWeekStart.setDate(shownWeekStart.getDate() - shownWeekStart.getDay()); // start of that week (Sun)
+  const shownWeekStart = getWeekStart(state.scheduleWeekOffset || 0);
   const shownWeekEnd = new Date(shownWeekStart);
   shownWeekEnd.setDate(shownWeekEnd.getDate() + 6);
 
@@ -769,17 +765,13 @@ function renderCalendar() {
 }
 
 function jumpToDate(year, month, day) {
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  // Find start of current week (Sunday)
-  const currentWeekStart = new Date(today);
-  currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay());
-  // Find start of week containing target date
+  // Find start of week containing target date (Sunday)
   const target = new Date(year, month, day);
   const targetWeekStart = new Date(target);
   targetWeekStart.setDate(targetWeekStart.getDate() - targetWeekStart.getDay());
-  // Offset in weeks
-  const diffMs = targetWeekStart - currentWeekStart;
+  // Find offset vs this week's Sunday (week 0)
+  const thisWeekStart = getWeekStart(0);
+  const diffMs = targetWeekStart - thisWeekStart;
   const weekOffset = Math.round(diffMs / (7 * 24 * 60 * 60 * 1000));
   state.scheduleWeekOffset = Math.max(0, weekOffset);
   renderSchedule();
@@ -788,11 +780,8 @@ function jumpToDate(year, month, day) {
 
 function shiftScheduleWeek(delta) {
   state.scheduleWeekOffset = Math.max(0, (state.scheduleWeekOffset || 0) + delta);
-  // Sync calendar month to show the week being viewed
+  const weekStart = getWeekStart(state.scheduleWeekOffset);
   const today = new Date();
-  today.setHours(0,0,0,0);
-  const weekStart = new Date(today);
-  weekStart.setDate(weekStart.getDate() + state.scheduleWeekOffset * 7);
   const monthDiff = (weekStart.getFullYear() - today.getFullYear()) * 12 + (weekStart.getMonth() - today.getMonth());
   state.calMonthOffset = monthDiff;
   renderSchedule();
@@ -806,17 +795,19 @@ function filterSchedule(filter) {
   renderSchedule();
 }
 
-function renderSchedule() {
-  const container = document.getElementById('scheduleList');
+function getWeekStart(offset) {
   const now = new Date();
   now.setHours(0,0,0,0);
-  const offset = state.scheduleWeekOffset || 0;
+  const sunday = new Date(now);
+  sunday.setDate(sunday.getDate() - sunday.getDay()); // this week's Sunday
+  sunday.setDate(sunday.getDate() + (offset || 0) * 7);
+  return sunday;
+}
 
-  // Calculate Sunday-anchored week window
-  const currentWeekSunday = new Date(now);
-  currentWeekSunday.setDate(currentWeekSunday.getDate() - currentWeekSunday.getDay());
-  const weekStart = new Date(currentWeekSunday);
-  weekStart.setDate(weekStart.getDate() + offset * 7);
+function renderSchedule() {
+  const container = document.getElementById('scheduleList');
+  const offset = state.scheduleWeekOffset || 0;
+  const weekStart = getWeekStart(offset);
   const weekEnd = new Date(weekStart);
   weekEnd.setDate(weekEnd.getDate() + 7);
 
