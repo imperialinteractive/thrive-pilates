@@ -766,7 +766,7 @@ function renderCalendar() {
 
     if (hasClasses && !isPast) {
       const dot = document.createElement('span');
-      dot.style.cssText = 'position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;display:block;background:' + (inSelectedWeek ? 'rgba(255,255,255,0.7)' : 'var(--teal)');
+      dot.style.cssText = 'position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;display:block;pointer-events:none;background:' + (inSelectedWeek ? 'rgba(255,255,255,0.7)' : 'var(--teal)');
       cell.appendChild(dot);
     }
 
@@ -775,9 +775,15 @@ function renderCalendar() {
 
   // Event delegation — single listener, never stacks
   grid.onclick = function(e) {
-    const el = e.target.closest('[data-jump-year]');
-    if (!el) return;
-    jumpToDate(parseInt(el.dataset.jumpYear), parseInt(el.dataset.jumpMonth), parseInt(el.dataset.jumpDay));
+    // Walk up from click target to find a cell with data-y
+    let el = e.target;
+    while (el && el !== grid) {
+      if (el.dataset && el.dataset.y !== undefined) {
+        jumpToDate(parseInt(el.dataset.y), parseInt(el.dataset.m), parseInt(el.dataset.d));
+        return;
+      }
+      el = el.parentElement;
+    }
   };
 }
 
