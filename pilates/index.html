@@ -697,6 +697,7 @@ function toggleMobileMenu() {
 // MINI CALENDAR
 // =======================================================================
 state.calMonthOffset = 0; // months from today's month
+state.selectedDate = null; // null = show week, otherwise show just that day
 
 function calShiftMonth(delta) {
   state.calMonthOffset = (state.calMonthOffset || 0) + delta;
@@ -777,21 +778,15 @@ function renderCalendar() {
 }
 
 function jumpToDate(year, month, day) {
-  // Find start of week containing target date (Sunday)
-  const target = new Date(year, month, day);
-  const targetWeekStart = new Date(target);
-  targetWeekStart.setDate(targetWeekStart.getDate() - targetWeekStart.getDay());
-  // Find offset vs this week's Sunday (week 0)
-  const thisWeekStart = getWeekStart(0);
-  const diffMs = targetWeekStart - thisWeekStart;
-  const weekOffset = Math.round(diffMs / (7 * 24 * 60 * 60 * 1000));
-  state.scheduleWeekOffset = Math.max(0, weekOffset);
-  console.log('jumpToDate:', year, month, day, '-> weekOffset:', weekOffset, 'thisWeek:', thisWeekStart, 'target:', targetWeekStart);
+  // Store the exact day to filter to just that day's classes
+  state.selectedDate = new Date(year, month, day);
+  state.selectedDate.setHours(0, 0, 0, 0);
   renderSchedule();
   renderCalendar();
 }
 
 function shiftScheduleWeek(delta) {
+  state.selectedDate = null; // clear any selected date when using week nav
   state.scheduleWeekOffset = Math.max(0, (state.scheduleWeekOffset || 0) + delta);
   const weekStart = getWeekStart(state.scheduleWeekOffset);
   const today = new Date();
@@ -819,32 +814,47 @@ function getWeekStart(offset) {
 
 function renderSchedule() {
   const container = document.getElementById('scheduleList');
-  const offset = state.scheduleWeekOffset || 0;
-  const weekStart = getWeekStart(offset);
-  const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekEnd.getDate() + 7);
-
-  // Update week label
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const labelEl = document.getElementById('schedule-week-label');
-  if (labelEl) {
-    if (offset === 0) labelEl.textContent = 'This Week';
-    else if (offset === 1) labelEl.textContent = 'Next Week';
-    else {
-      const endDisplay = new Date(weekEnd);
-      endDisplay.setDate(endDisplay.getDate() - 1);
-      labelEl.textContent = `${months[weekStart.getMonth()]} ${weekStart.getDate()} – ${months[endDisplay.getMonth()]} ${endDisplay.getDate()}`;
+  let filtered, weekStart, weekEnd;
+
+  // If a specific date is selected, show only that day's classes
+  if (state.selectedDate) {
+    const nextDay = new Date(state.selectedDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+    filtered = state.classes.filter(c => {
+      const d = new Date(c.date);
+      return d >= state.selectedDate && d < nextDay;
+    });
+    if (labelEl) {
+      labelEl.textContent = months[state.selectedDate.getMonth()] + ' ' + state.selectedDate.getDate();
     }
+  } else {
+    // Otherwise show full week by offset
+    const offset = state.scheduleWeekOffset || 0;
+    weekStart = getWeekStart(offset);
+    weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 7);
+
+    filtered = state.classes.filter(c => {
+      const d = new Date(c.date);
+      return d >= weekStart && d < weekEnd;
+    });
+
+    if (labelEl) {
+      if (offset === 0) labelEl.textContent = 'This Week';
+      else if (offset === 1) labelEl.textContent = 'Next Week';
+      else {
+        const endDisplay = new Date(weekEnd);
+        endDisplay.setDate(endDisplay.getDate() - 1);
+        labelEl.textContent = `${months[weekStart.getMonth()]} ${weekStart.getDate()} – ${months[endDisplay.getMonth()]} ${endDisplay.getDate()}`;
+      }
+    }
+
+    // Disable prev button if on current week
+    const prevBtn = document.querySelector('[onclick="shiftScheduleWeek(-1)"]');
+    if (prevBtn) prevBtn.disabled = offset === 0;
   }
-
-  // Disable prev button if on current week
-  const prevBtn = document.querySelector('[onclick="shiftScheduleWeek(-1)"]');
-  if (prevBtn) prevBtn.disabled = offset === 0;
-
-  let filtered = state.classes.filter(c => {
-    const d = new Date(c.date);
-    return d >= weekStart && d < weekEnd;
-  });
 
   if (state.scheduleFilter !== 'all') {
     filtered = filtered.filter(c => c.type === state.scheduleFilter);
