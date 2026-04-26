@@ -775,11 +775,10 @@ function renderCalendar() {
 
   // Event delegation — single listener, never stacks
   grid.onclick = function(e) {
-    // Walk up from click target to find a cell with data-y
     let el = e.target;
     while (el && el !== grid) {
-      if (el.dataset && el.dataset.y !== undefined) {
-        jumpToDate(parseInt(el.dataset.y), parseInt(el.dataset.m), parseInt(el.dataset.d));
+      if (el.dataset && el.dataset.jumpYear !== undefined) {
+        jumpToDate(parseInt(el.dataset.jumpYear), parseInt(el.dataset.jumpMonth), parseInt(el.dataset.jumpDay));
         return;
       }
       el = el.parentElement;
