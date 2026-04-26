@@ -772,9 +772,16 @@ function renderCalendar() {
 function jumpToDate(year, month, day) {
   const today = new Date();
   today.setHours(0,0,0,0);
+  // Find start of current week (Sunday)
+  const currentWeekStart = new Date(today);
+  currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay());
+  // Find start of week containing target date
   const target = new Date(year, month, day);
-  const diffDays = Math.round((target - today) / (1000 * 60 * 60 * 24));
-  const weekOffset = Math.floor(diffDays / 7);
+  const targetWeekStart = new Date(target);
+  targetWeekStart.setDate(targetWeekStart.getDate() - targetWeekStart.getDay());
+  // Offset in weeks
+  const diffMs = targetWeekStart - currentWeekStart;
+  const weekOffset = Math.round(diffMs / (7 * 24 * 60 * 60 * 1000));
   state.scheduleWeekOffset = Math.max(0, weekOffset);
   renderSchedule();
   renderCalendar();
@@ -803,11 +810,13 @@ function filterSchedule(filter) {
 function renderSchedule() {
   const container = document.getElementById('scheduleList');
   const now = new Date();
+  now.setHours(0,0,0,0);
   const offset = state.scheduleWeekOffset || 0;
 
-  // Calculate week window
-  const weekStart = new Date(now);
-  weekStart.setHours(0,0,0,0);
+  // Calculate Sunday-anchored week window
+  const currentWeekSunday = new Date(now);
+  currentWeekSunday.setDate(currentWeekSunday.getDate() - currentWeekSunday.getDay());
+  const weekStart = new Date(currentWeekSunday);
   weekStart.setDate(weekStart.getDate() + offset * 7);
   const weekEnd = new Date(weekStart);
   weekEnd.setDate(weekEnd.getDate() + 7);
@@ -818,7 +827,11 @@ function renderSchedule() {
   if (labelEl) {
     if (offset === 0) labelEl.textContent = 'This Week';
     else if (offset === 1) labelEl.textContent = 'Next Week';
-    else labelEl.textContent = `${months[weekStart.getMonth()]} ${weekStart.getDate()} – ${months[weekEnd.getDate() < weekStart.getDate() ? weekEnd.getMonth() : weekStart.getMonth()]} ${weekEnd.getDate()}`;
+    else {
+      const endDisplay = new Date(weekEnd);
+      endDisplay.setDate(endDisplay.getDate() - 1);
+      labelEl.textContent = `${months[weekStart.getMonth()]} ${weekStart.getDate()} – ${months[endDisplay.getMonth()]} ${endDisplay.getDate()}`;
+    }
   }
 
   // Disable prev button if on current week
