@@ -380,12 +380,12 @@ tr:hover td{background:#fafaf8}
         <button onclick="calShiftMonth(1)" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--teal);padding:4px 10px;">›</button>
       </div>
       <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;margin-bottom:6px;">
-        <div style="font-size:10px;font-weight:700;color:var(--gray-dark);padding:2px 0;">S</div>
         <div style="font-size:10px;font-weight:700;color:var(--gray-dark);padding:2px 0;">M</div>
         <div style="font-size:10px;font-weight:700;color:var(--gray-dark);padding:2px 0;">T</div>
         <div style="font-size:10px;font-weight:700;color:var(--gray-dark);padding:2px 0;">W</div>
         <div style="font-size:10px;font-weight:700;color:var(--gray-dark);padding:2px 0;">T</div>
         <div style="font-size:10px;font-weight:700;color:var(--gray-dark);padding:2px 0;">F</div>
+        <div style="font-size:10px;font-weight:700;color:var(--gray-dark);padding:2px 0;">S</div>
         <div style="font-size:10px;font-weight:700;color:var(--gray-dark);padding:2px 0;">S</div>
       </div>
       <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;"></div>
@@ -713,12 +713,14 @@ function renderCalendar() {
   const labelEl = document.getElementById('cal-month-label');
   if (labelEl) labelEl.textContent = `${months[month]} ${year}`;
 
-  // Figure out which week is currently shown
+  // Figure out which week is currently shown (Mon–Sun)
   const shownWeekStart = getWeekStart(state.scheduleWeekOffset || 0);
   const shownWeekEnd = new Date(shownWeekStart);
-  shownWeekEnd.setDate(shownWeekEnd.getDate() + 6);
+  shownWeekEnd.setDate(shownWeekEnd.getDate() + 6); // Sunday of that week
 
-  const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
+  // Monday-start: shift getDay so Mon=0, Tue=1, ..., Sun=6
+  const rawFirstDay = new Date(year, month, 1).getDay();
+  const firstDay = rawFirstDay === 0 ? 6 : rawFirstDay - 1;
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
   const grid = document.getElementById('cal-grid');
@@ -786,9 +788,10 @@ function jumpToDate(year, month, day) {
   // Store the exact day to filter to just that day's classes
   state.selectedDate = new Date(year, month, day);
   state.selectedDate.setHours(0, 0, 0, 0);
-  // Also sync the week offset so Prev/Next work from this week
+  // Also sync the week offset so Prev/Next work from this week (Monday-anchored)
   const targetWeekStart = new Date(state.selectedDate);
-  targetWeekStart.setDate(targetWeekStart.getDate() - targetWeekStart.getDay());
+  const tDay = targetWeekStart.getDay();
+  targetWeekStart.setDate(targetWeekStart.getDate() - (tDay === 0 ? 6 : tDay - 1));
   const thisWeekStart = getWeekStart(0);
   const weekOffset = Math.round((targetWeekStart - thisWeekStart) / (7 * 24 * 60 * 60 * 1000));
   state.scheduleWeekOffset = Math.max(0, weekOffset);
@@ -820,10 +823,13 @@ function filterSchedule(filter) {
 function getWeekStart(offset) {
   const now = new Date();
   now.setHours(0,0,0,0);
-  const sunday = new Date(now);
-  sunday.setDate(sunday.getDate() - sunday.getDay()); // this week's Sunday
-  sunday.setDate(sunday.getDate() + (offset || 0) * 7);
-  return sunday;
+  const monday = new Date(now);
+  // Start week on Monday (getDay: 0=Sun,1=Mon,...6=Sat)
+  const day = monday.getDay();
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+  monday.setDate(monday.getDate() + diffToMonday);
+  monday.setDate(monday.getDate() + (offset || 0) * 7);
+  return monday;
 }
 
 function renderSchedule() {
