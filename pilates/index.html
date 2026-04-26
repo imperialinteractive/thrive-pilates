@@ -755,13 +755,13 @@ function renderCalendar() {
 
   grid.innerHTML = html;
 
-  // Attach click handlers after rendering
-  grid.querySelectorAll('[data-jump]').forEach(el => {
-    el.addEventListener('click', function() {
-      const parts = this.getAttribute('data-jump').split('-');
-      jumpToDate(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
-    });
-  });
+  // Use event delegation on the grid (avoids stacking listeners on re-render)
+  grid.onclick = function(e) {
+    const el = e.target.closest('[data-jump]');
+    if (!el) return;
+    const parts = el.getAttribute('data-jump').split('-');
+    jumpToDate(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
+  };
 }
 
 function jumpToDate(year, month, day) {
@@ -774,6 +774,7 @@ function jumpToDate(year, month, day) {
   const diffMs = targetWeekStart - thisWeekStart;
   const weekOffset = Math.round(diffMs / (7 * 24 * 60 * 60 * 1000));
   state.scheduleWeekOffset = Math.max(0, weekOffset);
+  console.log('jumpToDate:', year, month, day, '-> weekOffset:', weekOffset, 'thisWeek:', thisWeekStart, 'target:', targetWeekStart);
   renderSchedule();
   renderCalendar();
 }
