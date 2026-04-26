@@ -759,9 +759,10 @@ function renderCalendar() {
     ].join(';');
 
     if (!isPast) {
-      cell.dataset.jumpYear = year;
-      cell.dataset.jumpMonth = month;
-      cell.dataset.jumpDay = d;
+      (function(y, mo, dy) {
+        cell.addEventListener('touchend', function(e) { e.preventDefault(); jumpToDate(y, mo, dy); });
+        cell.addEventListener('click', function() { jumpToDate(y, mo, dy); });
+      })(year, month, d);
     }
 
     if (hasClasses && !isPast) {
@@ -772,18 +773,6 @@ function renderCalendar() {
 
     grid.appendChild(cell);
   }
-
-  // Event delegation — single listener, never stacks
-  grid.onclick = function(e) {
-    let el = e.target;
-    while (el && el !== grid) {
-      if (el.dataset && el.dataset.jumpYear !== undefined) {
-        jumpToDate(parseInt(el.dataset.jumpYear), parseInt(el.dataset.jumpMonth), parseInt(el.dataset.jumpDay));
-        return;
-      }
-      el = el.parentElement;
-    }
-  };
 }
 
 function jumpToDate(year, month, day) {
