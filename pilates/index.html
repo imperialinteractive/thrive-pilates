@@ -722,45 +722,62 @@ function renderCalendar() {
 
   const grid = document.getElementById('cal-grid');
   if (!grid) return;
-  let html = '';
+  grid.innerHTML = '';
+
+  const todayMidnight = new Date(); todayMidnight.setHours(0,0,0,0);
 
   // Empty cells before first day
   for (let i = 0; i < firstDay; i++) {
-    html += `<div></div>`;
+    grid.appendChild(document.createElement('div'));
   }
 
   for (let d = 1; d <= daysInMonth; d++) {
     const date = new Date(year, month, d);
     const isToday = date.toDateString() === new Date().toDateString();
     const inSelectedWeek = date >= shownWeekStart && date <= shownWeekEnd;
-    const isPast = date < new Date(new Date().setHours(0,0,0,0));
+    const isPast = date < todayMidnight;
 
-    // Check if this date has classes
     const hasClasses = state.classes && state.classes.some(c => {
       const cd = new Date(c.date);
       return cd.getFullYear() === year && cd.getMonth() === month && cd.getDate() === d;
     });
 
-    let bg = 'transparent';
-    let color = isPast ? 'var(--gray-dark)' : 'var(--text)';
-    let fontWeight = '400';
-    let border = 'none';
-    if (inSelectedWeek) { bg = 'var(--teal)'; color = 'white'; fontWeight = '700'; }
-    else if (isToday) { border = '2px solid var(--teal)'; color = 'var(--teal)'; fontWeight = '700'; }
+    const cell = document.createElement('div');
+    cell.textContent = d;
+    cell.style.cssText = [
+      'padding:5px 2px',
+      'border-radius:8px',
+      'font-size:12px',
+      'font-family:-apple-system,sans-serif',
+      'text-align:center',
+      'position:relative',
+      'font-weight:' + (inSelectedWeek || isToday ? '700' : '400'),
+      'color:' + (inSelectedWeek ? 'white' : isToday ? 'var(--teal)' : isPast ? 'var(--gray-dark)' : 'var(--text)'),
+      'background:' + (inSelectedWeek ? 'var(--teal)' : 'transparent'),
+      'border:' + (isToday && !inSelectedWeek ? '2px solid var(--teal)' : 'none'),
+      'cursor:' + (isPast ? 'default' : 'pointer'),
+    ].join(';');
 
-    const dot = (hasClasses && !isPast) ? `<span style='position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:${inSelectedWeek ? 'rgba(255,255,255,0.7)' : 'var(--teal)'};display:block;'></span>` : '';
-    const clickAttr = isPast ? '' : `data-jump='${year}-${month}-${d}'`;
-    html += `<div ${clickAttr} style='padding:5px 2px;border-radius:8px;font-size:12px;font-family:-apple-system,sans-serif;font-weight:${fontWeight};color:${color};background:${bg};border:${border};cursor:${isPast ? 'default' : 'pointer'};position:relative;'>${d}${dot}</div>`;
+    if (!isPast) {
+      cell.dataset.jumpYear = year;
+      cell.dataset.jumpMonth = month;
+      cell.dataset.jumpDay = d;
+    }
+
+    if (hasClasses && !isPast) {
+      const dot = document.createElement('span');
+      dot.style.cssText = 'position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;display:block;background:' + (inSelectedWeek ? 'rgba(255,255,255,0.7)' : 'var(--teal)');
+      cell.appendChild(dot);
+    }
+
+    grid.appendChild(cell);
   }
 
-  grid.innerHTML = html;
-
-  // Use event delegation on the grid (avoids stacking listeners on re-render)
+  // Event delegation — single listener, never stacks
   grid.onclick = function(e) {
-    const el = e.target.closest('[data-jump]');
+    const el = e.target.closest('[data-jump-year]');
     if (!el) return;
-    const parts = el.getAttribute('data-jump').split('-');
-    jumpToDate(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
+    jumpToDate(parseInt(el.dataset.jumpYear), parseInt(el.dataset.jumpMonth), parseInt(el.dataset.jumpDay));
   };
 }
 
