@@ -743,6 +743,11 @@ function renderCalendar() {
       return cd.getFullYear() === year && cd.getMonth() === month && cd.getDate() === d;
     });
 
+    const isSelectedDay = state.selectedDate &&
+      state.selectedDate.getFullYear() === year &&
+      state.selectedDate.getMonth() === month &&
+      state.selectedDate.getDate() === d;
+
     const cell = document.createElement(isPast ? 'div' : 'button');
     cell.textContent = d;
     cell.style.cssText = [
@@ -754,10 +759,10 @@ function renderCalendar() {
       'position:relative',
       'width:100%',
       'outline:none',
-      'font-weight:' + (inSelectedWeek || isToday ? '700' : '400'),
-      'color:' + (inSelectedWeek ? 'white' : isToday ? 'var(--teal)' : isPast ? 'var(--gray-dark)' : 'var(--text)'),
-      'background:' + (inSelectedWeek ? 'var(--teal)' : 'transparent'),
-      'border:' + (isToday && !inSelectedWeek ? '2px solid var(--teal)' : 'none'),
+      'font-weight:' + (isSelectedDay || inSelectedWeek || isToday ? '700' : '400'),
+      'color:' + (isSelectedDay ? 'white' : inSelectedWeek ? 'rgba(255,255,255,0.75)' : isToday ? 'var(--teal)' : isPast ? 'var(--gray-dark)' : 'var(--text)'),
+      'background:' + (isSelectedDay ? 'var(--teal)' : inSelectedWeek ? 'rgba(49,186,185,0.25)' : 'transparent'),
+      'border:' + (isToday && !isSelectedDay && !inSelectedWeek ? '2px solid var(--teal)' : 'none'),
       'cursor:' + (isPast ? 'default' : 'pointer'),
     ].join(';');
 
@@ -781,6 +786,15 @@ function jumpToDate(year, month, day) {
   // Store the exact day to filter to just that day's classes
   state.selectedDate = new Date(year, month, day);
   state.selectedDate.setHours(0, 0, 0, 0);
+  // Also sync the week offset so Prev/Next work from this week
+  const targetWeekStart = new Date(state.selectedDate);
+  targetWeekStart.setDate(targetWeekStart.getDate() - targetWeekStart.getDay());
+  const thisWeekStart = getWeekStart(0);
+  const weekOffset = Math.round((targetWeekStart - thisWeekStart) / (7 * 24 * 60 * 60 * 1000));
+  state.scheduleWeekOffset = Math.max(0, weekOffset);
+  // Sync calendar month
+  const today = new Date();
+  state.calMonthOffset = (targetWeekStart.getFullYear() - today.getFullYear()) * 12 + (targetWeekStart.getMonth() - today.getMonth());
   renderSchedule();
   renderCalendar();
 }
