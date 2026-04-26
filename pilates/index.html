@@ -752,21 +752,20 @@ function renderCalendar() {
     if (inSelectedWeek) { bg = 'var(--teal)'; color = 'white'; fontWeight = '700'; }
     else if (isToday) { border = '2px solid var(--teal)'; color = 'var(--teal)'; fontWeight = '700'; }
 
-    html += `<div onclick="${isPast ? '' : `jumpToDate(${year},${month},${d})`}" style="
-      padding:5px 2px;
-      border-radius:8px;
-      font-size:12px;
-      font-family:-apple-system,sans-serif;
-      font-weight:${fontWeight};
-      color:${color};
-      background:${bg};
-      border:${border};
-      cursor:${isPast ? 'default' : 'pointer'};
-      position:relative;
-    ">${d}${hasClasses && !isPast ? `<span style="position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:${inSelectedWeek ? 'rgba(255,255,255,0.7)' : 'var(--teal)'};display:block;"></span>` : ''}</div>`;
+    const dot = (hasClasses && !isPast) ? `<span style='position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:${inSelectedWeek ? 'rgba(255,255,255,0.7)' : 'var(--teal)'};display:block;'></span>` : '';
+    const clickAttr = isPast ? '' : `data-jump='${year}-${month}-${d}'`;
+    html += `<div ${clickAttr} style='padding:5px 2px;border-radius:8px;font-size:12px;font-family:-apple-system,sans-serif;font-weight:${fontWeight};color:${color};background:${bg};border:${border};cursor:${isPast ? 'default' : 'pointer'};position:relative;'>${d}${dot}</div>`;
   }
 
   grid.innerHTML = html;
+
+  // Attach click handlers after rendering
+  grid.querySelectorAll('[data-jump]').forEach(el => {
+    el.addEventListener('click', function() {
+      const parts = this.getAttribute('data-jump').split('-');
+      jumpToDate(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
+    });
+  });
 }
 
 function jumpToDate(year, month, day) {
