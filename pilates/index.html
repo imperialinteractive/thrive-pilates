@@ -372,6 +372,25 @@ tr:hover td{background:#fafaf8}
     <h2>Class Schedule</h2>
     <p class="text-muted mb-3">Browse and book upcoming classes.</p>
 
+    <!-- Mini Calendar -->
+    <div id="scheduleCalendar" style="background:var(--white);border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:var(--shadow);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <button onclick="calShiftMonth(-1)" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--teal);padding:4px 10px;">‹</button>
+        <span id="cal-month-label" style="font-size:14px;font-weight:700;color:var(--text);font-family:-apple-system,sans-serif;"></span>
+        <button onclick="calShiftMonth(1)" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--teal);padding:4px 10px;">›</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;margin-bottom:6px;">
+        <div style="font-size:10px;font-weight:700;color:var(--gray-dark);padding:2px 0;">S</div>
+        <div style="font-size:10px;font-weight:700;color:var(--gray-dark);padding:2px 0;">M</div>
+        <div style="font-size:10px;font-weight:700;color:var(--gray-dark);padding:2px 0;">T</div>
+        <div style="font-size:10px;font-weight:700;color:var(--gray-dark);padding:2px 0;">W</div>
+        <div style="font-size:10px;font-weight:700;color:var(--gray-dark);padding:2px 0;">T</div>
+        <div style="font-size:10px;font-weight:700;color:var(--gray-dark);padding:2px 0;">F</div>
+        <div style="font-size:10px;font-weight:700;color:var(--gray-dark);padding:2px 0;">S</div>
+      </div>
+      <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;"></div>
+    </div>
+
     <!-- Week nav -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
       <button onclick="shiftScheduleWeek(-1)" style="background:var(--card);border:1px solid var(--gray);border-radius:10px;padding:8px 16px;cursor:pointer;font-size:14px;font-family:-apple-system,sans-serif;color:var(--text);">← Prev</button>
@@ -660,7 +679,7 @@ function navigate(page) {
   state.currentPage = page;
 
   // Render dynamic content
-  if (page === 'schedule') renderSchedule();
+  if (page === 'schedule') { renderSchedule(); renderCalendar(); }
   if (page === 'account') renderAccount();
   if (page === 'admin-login') { /* already static */ }
 
@@ -674,9 +693,104 @@ function toggleMobileMenu() {
 // =======================================================================
 // SCHEDULE RENDERING
 // =======================================================================
+// =======================================================================
+// MINI CALENDAR
+// =======================================================================
+state.calMonthOffset = 0; // months from today's month
+
+function calShiftMonth(delta) {
+  state.calMonthOffset = (state.calMonthOffset || 0) + delta;
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const today = new Date();
+  const base = new Date(today.getFullYear(), today.getMonth() + (state.calMonthOffset || 0), 1);
+  const year = base.getFullYear();
+  const month = base.getMonth();
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const labelEl = document.getElementById('cal-month-label');
+  if (labelEl) labelEl.textContent = `${months[month]} ${year}`;
+
+  // Figure out which week is currently shown
+  const now = new Date();
+  now.setHours(0,0,0,0);
+  const shownWeekStart = new Date(now);
+  shownWeekStart.setDate(shownWeekStart.getDate() + (state.scheduleWeekOffset || 0) * 7);
+  shownWeekStart.setDate(shownWeekStart.getDate() - shownWeekStart.getDay()); // start of that week (Sun)
+  const shownWeekEnd = new Date(shownWeekStart);
+  shownWeekEnd.setDate(shownWeekEnd.getDate() + 6);
+
+  const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  const grid = document.getElementById('cal-grid');
+  if (!grid) return;
+  let html = '';
+
+  // Empty cells before first day
+  for (let i = 0; i < firstDay; i++) {
+    html += `<div></div>`;
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(year, month, d);
+    const isToday = date.toDateString() === new Date().toDateString();
+    const inSelectedWeek = date >= shownWeekStart && date <= shownWeekEnd;
+    const isPast = date < new Date(new Date().setHours(0,0,0,0));
+
+    // Check if this date has classes
+    const hasClasses = state.classes && state.classes.some(c => {
+      const cd = new Date(c.date);
+      return cd.getFullYear() === year && cd.getMonth() === month && cd.getDate() === d;
+    });
+
+    let bg = 'transparent';
+    let color = isPast ? 'var(--gray-dark)' : 'var(--text)';
+    let fontWeight = '400';
+    let border = 'none';
+    if (inSelectedWeek) { bg = 'var(--teal)'; color = 'white'; fontWeight = '700'; }
+    else if (isToday) { border = '2px solid var(--teal)'; color = 'var(--teal)'; fontWeight = '700'; }
+
+    html += `<div onclick="${isPast ? '' : `jumpToDate(${year},${month},${d})`}" style="
+      padding:5px 2px;
+      border-radius:8px;
+      font-size:12px;
+      font-family:-apple-system,sans-serif;
+      font-weight:${fontWeight};
+      color:${color};
+      background:${bg};
+      border:${border};
+      cursor:${isPast ? 'default' : 'pointer'};
+      position:relative;
+    ">${d}${hasClasses && !isPast ? `<span style="position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:${inSelectedWeek ? 'rgba(255,255,255,0.7)' : 'var(--teal)'};display:block;"></span>` : ''}</div>`;
+  }
+
+  grid.innerHTML = html;
+}
+
+function jumpToDate(year, month, day) {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const target = new Date(year, month, day);
+  const diffDays = Math.round((target - today) / (1000 * 60 * 60 * 24));
+  const weekOffset = Math.floor(diffDays / 7);
+  state.scheduleWeekOffset = Math.max(0, weekOffset);
+  renderSchedule();
+  renderCalendar();
+}
+
 function shiftScheduleWeek(delta) {
   state.scheduleWeekOffset = Math.max(0, (state.scheduleWeekOffset || 0) + delta);
+  // Sync calendar month to show the week being viewed
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const weekStart = new Date(today);
+  weekStart.setDate(weekStart.getDate() + state.scheduleWeekOffset * 7);
+  const monthDiff = (weekStart.getFullYear() - today.getFullYear()) * 12 + (weekStart.getMonth() - today.getMonth());
+  state.calMonthOffset = monthDiff;
   renderSchedule();
+  renderCalendar();
 }
 
 function filterSchedule(filter) {
