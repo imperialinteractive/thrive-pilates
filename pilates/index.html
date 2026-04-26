@@ -742,7 +742,7 @@ function renderCalendar() {
       return cd.getFullYear() === year && cd.getMonth() === month && cd.getDate() === d;
     });
 
-    const cell = document.createElement('div');
+    const cell = document.createElement(isPast ? 'div' : 'button');
     cell.textContent = d;
     cell.style.cssText = [
       'padding:5px 2px',
@@ -751,6 +751,8 @@ function renderCalendar() {
       'font-family:-apple-system,sans-serif',
       'text-align:center',
       'position:relative',
+      'width:100%',
+      'outline:none',
       'font-weight:' + (inSelectedWeek || isToday ? '700' : '400'),
       'color:' + (inSelectedWeek ? 'white' : isToday ? 'var(--teal)' : isPast ? 'var(--gray-dark)' : 'var(--text)'),
       'background:' + (inSelectedWeek ? 'var(--teal)' : 'transparent'),
@@ -760,8 +762,7 @@ function renderCalendar() {
 
     if (!isPast) {
       (function(y, mo, dy) {
-        cell.addEventListener('touchend', function(e) { e.preventDefault(); jumpToDate(y, mo, dy); });
-        cell.addEventListener('click', function() { jumpToDate(y, mo, dy); });
+        cell.onclick = function() { jumpToDate(y, mo, dy); };
       })(year, month, d);
     }
 
